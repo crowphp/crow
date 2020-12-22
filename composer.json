@@ -15,7 +15,8 @@
     {
         "psr-4":
         {
-            "CrowPHP\\": "src/Crow"
+            "Crow\\": "src/Crow",
+            "Crow\\Router\\": "src/Crow/Router"
         }
     }
 }
