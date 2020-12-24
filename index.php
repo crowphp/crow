@@ -28,11 +28,12 @@ $router->addGroup('/yousaf', function (RouterInterface $router) {
 
     $router->get('/mani/id/{id}', function (ServerRequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
         $response->getBody()->write('Mani ' . $id);
-        return $response->withHeader('Content-Type', 'text/plain');;
+        throw new Exception('Hey i am an exception');
     });
 });
 $app->withRouter($router);
 
+//Uncaught Exceptions
 $app->on('error', function ($error) {
     var_dump($error->getMessage());
 });

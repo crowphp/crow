@@ -3,10 +3,12 @@
 namespace Crow\Router;
 
 use FastRoute;
-use LogicException;
+use React\Http\Message\Response;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use React\Http\Message\Response;
+use Crow\ErrorHandler;
+use Crow\DefaultHeaders;
+use Crow\Router\Exceptions\RoutingLogicException;
 
 class FastRouter implements RouterInterface
 {
@@ -160,25 +162,31 @@ class FastRouter implements RouterInterface
         $dispatcher = $this->makeDispatcher();
         $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getUri()->getPath());
 
-        $response = new Response(200, ['Server' => 'CrowPHP/1']);
         switch ($routeInfo[0]) {
             case FastRoute\Dispatcher::NOT_FOUND:
-                $response->withHeader('Content-Type', 'text/plain');
-                $response->getBody()->write('Not Found');
-                $response->withStatus(404);
-                return $response;
+                return ErrorHandler::makeResponseWithCodeAndBody(
+                    404,
+                    "Not Found");
             case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-                $response->withHeader('Content-Type', 'text/plain');
-                $response->getBody()->write('Method not allowed');
-                $response->withStatus(405);
-                return $response;
+                return ErrorHandler::makeResponseWithCodeAndBody(
+                    405,
+                    "Method not allowed");
             case FastRoute\Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 $vars = $routeInfo[2];
-                $response = $handler($request, $response, ...array_values($vars));
-                return $response;
+                try {
+                    return $handler(
+                        $request,
+                        new Response(200, DefaultHeaders::get()),
+                        ...array_values($vars));
+                } catch (\Exception | \LogicException $exception) {
+                    return ErrorHandler::makeResponseWithCodeAndBody(
+                        500,
+                        ErrorHandler::exceptionToBody($exception));
+                }
         }
 
-        throw new LogicException('Something went wrong in routing.');
+        throw new RoutingLogicException('Something went wrong in routing.');
     }
+
 }

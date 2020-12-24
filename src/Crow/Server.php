@@ -3,8 +3,8 @@
 
 namespace Crow;
 
-use Crow\Router\RouterInterface;
 use React;
+use Crow\Router\RouterInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\LoopInterface;
@@ -14,22 +14,25 @@ class Server
 
     private RouterInterface $router;
     private array $eventListeners;
+    private LoopInterface $loop;
+    private int $loopTimeoutSeconds = 0;
 
-    public function listen(int $port = 5000)
+    private function loopTimeout()
     {
-        $loop = React\EventLoop\Factory::create();
-        $server = $this->makeServer($loop);
-        $socket = $this->reserveSocket($port, $loop);
-        $this->attachListeners($server);
-        $server->listen($socket);
-        $loop->run();
+        if ($this->loopTimeoutSeconds > 0) {
+            $loop = $this->loop;
+            $this->loop->addTimer($this->loopTimeoutSeconds, function () use ($loop) {
+                echo "Loop timeout enabled, stopping server". PHP_EOL;
+                $loop->stop();
+            });
+        }
     }
 
-    private function makeServer(LoopInterface $loop): React\Http\Server
+    private function makeServer(): React\Http\Server
     {
         $router = $this->router;
 
-        return new React\Http\Server($loop,
+        return new React\Http\Server($this->loop,
             function (ServerRequestInterface $request) use ($router): ResponseInterface {
                 return $router->dispatch($request);
             });
@@ -42,15 +45,34 @@ class Server
         }
     }
 
+    private function reserveSocket(int $port): React\Socket\Server
+    {
+        return new React\Socket\Server($port, $this->loop);
+    }
+
+    public function listen(int $port = 5000)
+    {
+        $this->loop = React\EventLoop\Factory::create();
+        $server = $this->makeServer();
+        $socket = $this->reserveSocket($port);
+        $this->attachListeners($server);
+        $server->listen($socket);
+        $this->loopTimeout();
+        $this->loop->run();
+    }
+
+    public function withTimeout(int $seconds)
+    {
+        $this->loopTimeoutSeconds = $seconds;
+
+    }
+
+
     public function on(string $event, callable $callback)
     {
         $this->eventListeners[$event] = $callback;
     }
 
-    private function reserveSocket(int $port, LoopInterface $loop): React\Socket\Server
-    {
-        return new React\Socket\Server($port, $loop);
-    }
 
     public function withRouter(RouterInterface $router): void
     {
