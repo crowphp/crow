@@ -16,6 +16,7 @@ class Server
     private LoopInterface $loop;
     private array $eventListeners;
     private int $loopTimeoutSeconds = 0;
+    private array $middlewares = array();
 
     private function loopTimeout()
     {
@@ -33,9 +34,12 @@ class Server
         $router = $this->router;
 
         return new React\Http\Server($this->loop,
-            function (ServerRequestInterface $request) use ($router): ResponseInterface {
-                return $router->dispatch($request);
-            });
+            ...[
+                ...$this->middlewares,
+                function (ServerRequestInterface $request) use ($router) {
+                    return $router->dispatch($request);
+                }
+            ]);
     }
 
     /**
@@ -59,10 +63,19 @@ class Server
     }
 
     /**
+     * @return LoopInterface
+     */
+    public function getLoop(): LoopInterface
+    {
+        return $this->loop;
+    }
+
+    /**
      * Encapsulating function that initialize and starts all the required
      * services before listening on the given port for HTTP calls.
      * @param int $port
      */
+
     public function listen(int $port = 5000)
     {
         $this->loop = React\EventLoop\Factory::create();
@@ -105,6 +118,15 @@ class Server
     public function withRouter(RouterInterface $router): void
     {
         $this->router = $router;
+    }
+
+    /**
+     * Adds new middlewares to the global handlers for the server
+     * @param callable $middleware
+     */
+    public function use(callable $middleware): void
+    {
+        array_push($this->middlewares, $middleware);
     }
 
 }
