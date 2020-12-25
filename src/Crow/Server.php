@@ -13,8 +13,8 @@ class Server
 {
 
     private RouterInterface $router;
-    private array $eventListeners;
     private LoopInterface $loop;
+    private array $eventListeners;
     private int $loopTimeoutSeconds = 0;
 
     private function loopTimeout()
@@ -22,7 +22,7 @@ class Server
         if ($this->loopTimeoutSeconds > 0) {
             $loop = $this->loop;
             $this->loop->addTimer($this->loopTimeoutSeconds, function () use ($loop) {
-                echo "Loop timeout enabled, stopping server". PHP_EOL;
+                echo "Loop timeout enabled, stopping server" . PHP_EOL;
                 $loop->stop();
             });
         }
@@ -38,6 +38,9 @@ class Server
             });
     }
 
+    /**
+     * @param React\Http\Server $server
+     */
     private function attachListeners(React\Http\Server $server)
     {
         foreach ($this->eventListeners as $event => $handler) {
@@ -45,11 +48,21 @@ class Server
         }
     }
 
+    /**
+     * Private function to create TCP socket on the given port
+     * @param int $port
+     * @return React\Socket\Server
+     */
     private function reserveSocket(int $port): React\Socket\Server
     {
         return new React\Socket\Server($port, $this->loop);
     }
 
+    /**
+     * Encapsulating function that initialize and starts all the required
+     * services before listening on the given port for HTTP calls.
+     * @param int $port
+     */
     public function listen(int $port = 5000)
     {
         $this->loop = React\EventLoop\Factory::create();
@@ -61,6 +74,11 @@ class Server
         $this->loop->run();
     }
 
+    /**
+     * Function to set timeout after which the server loop stops
+     * Useful when writing unit tests.
+     * @param int $seconds
+     */
     public function withTimeout(int $seconds)
     {
         $this->loopTimeoutSeconds = $seconds;
@@ -68,16 +86,25 @@ class Server
     }
 
 
+    /**
+     * Hook function to pass listeners for events to LoopInterface
+     * @param string $event
+     * @param callable $callback
+     */
     public function on(string $event, callable $callback)
     {
         $this->eventListeners[$event] = $callback;
     }
 
 
+    /**
+     * Sets the RouterInterface implementation with the server
+     * for routes and middleware handling.
+     * @param RouterInterface $router
+     */
     public function withRouter(RouterInterface $router): void
     {
         $this->router = $router;
     }
-
 
 }

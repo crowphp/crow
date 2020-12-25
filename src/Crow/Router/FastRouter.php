@@ -2,6 +2,7 @@
 
 namespace Crow\Router;
 
+use Crow\ResponseBuilder;
 use FastRoute;
 use React\Http\Message\Response;
 use Psr\Http\Message\ServerRequestInterface;
@@ -164,11 +165,11 @@ class FastRouter implements RouterInterface
 
         switch ($routeInfo[0]) {
             case FastRoute\Dispatcher::NOT_FOUND:
-                return ErrorHandler::makeResponseWithCodeAndBody(
+                return ResponseBuilder::makeResponseWithCodeAndBody(
                     404,
                     "Not Found");
             case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-                return ErrorHandler::makeResponseWithCodeAndBody(
+                return ResponseBuilder::makeResponseWithCodeAndBody(
                     405,
                     "Method not allowed");
             case FastRoute\Dispatcher::FOUND:
@@ -180,7 +181,7 @@ class FastRouter implements RouterInterface
                         new Response(200, DefaultHeaders::get()),
                         ...array_values($vars));
                 } catch (\Exception | \LogicException $exception) {
-                    return ErrorHandler::makeResponseWithCodeAndBody(
+                    return ResponseBuilder::makeResponseWithCodeAndBody(
                         500,
                         ErrorHandler::exceptionToBody($exception));
                 }

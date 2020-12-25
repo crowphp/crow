@@ -11,8 +11,16 @@ $app = new Server;
 $router = Crow\Router\Factory::make();
 
 $router->get('/', function (ServerRequestInterface $request, ResponseInterface $response): ResponseInterface {
-    $response->getBody()->write('Hello World');
-    return $response->withHeader('Content-Type', 'text');;
+
+
+    $response->getBody()->write("
+<html>
+<img src='./images/test.png'/>
+</html>
+");
+    return $response
+        ->withHeader('Content-Type', 'html')
+        ->withHeader('Set-Cookie', urlencode('username') . '=' . urlencode('test'));
 });
 
 $router->get('/id/{id}', function (ServerRequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
@@ -22,8 +30,8 @@ $router->get('/id/{id}', function (ServerRequestInterface $request, ResponseInte
 
 $router->addGroup('/yousaf', function (RouterInterface $router) {
     $router->get('/sunny/id/{id}', function (ServerRequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
-        $response->getBody()->write('Yousaf ' . $id);
-        return $response->withHeader('Content-Type', 'text/plain');;
+        $response->getBody()->write(json_encode(["message" => $id]));
+        return $response->withHeader('Content-Type', 'application/json');;
     });
 
     $router->get('/mani/id/{id}', function (ServerRequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
@@ -33,6 +41,7 @@ $router->addGroup('/yousaf', function (RouterInterface $router) {
 });
 $app->withRouter($router);
 
+//$app->withTimeout(20);
 //Uncaught Exceptions
 $app->on('error', function ($error) {
     var_dump($error->getMessage());

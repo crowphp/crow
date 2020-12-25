@@ -18,5 +18,8 @@
             "Crow\\": "src/Crow",
             "Crow\\Router\\": "src/Crow/Router"
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
     }
 }
