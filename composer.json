@@ -1,25 +1,23 @@
 {
-    "name": "yousaf/crowphp",
-    "authors": [
-        {
-            "name": "Yousaf Syed",
-            "email": "yousaf@brokergenius.com"
-        }
-    ],
-    "require": {
-        "react/http": "^1.2",
-        "ext-json": "*",
-        "nikic/fast-route": "^1.3"
-    },
-    "autoload":
+  "name": "crowphp/crow",
+  "authors": [
     {
-        "psr-4":
-        {
-            "Crow\\": "src/Crow",
-            "Crow\\Router\\": "src/Crow/Router"
-        }
-    },
-    "require-dev": {
-        "phpunit/phpunit": "^9.5"
+      "name": "Yousaf Syed",
+      "email": "yousaf@bmail.pk"
     }
+  ],
+  "require": {
+    "react/http": "^1.2",
+    "ext-json": "*",
+    "nikic/fast-route": "^1.3"
+  },
+  "autoload": {
+    "psr-4": {
+      "Crow\\": "src/Crow",
+      "Crow\\Router\\": "src/Crow/Router"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.5"
+  }
 }

@@ -1,11 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace Crow;
 
 use Exception;
 use LogicException;
-use Psr\Http\Message\ResponseInterface;
-use React\Http\Message\Response;
 
 class ErrorHandler
 {
