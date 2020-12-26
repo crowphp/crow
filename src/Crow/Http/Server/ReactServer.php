@@ -1,15 +1,14 @@
 <?php
 declare(strict_types=1);
 
-namespace Crow;
+namespace Crow\Http\Server;
 
 use React;
 use Crow\Router\RouterInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\LoopInterface;
 
-class Server
+class ReactServer implements ServerInterface
 {
 
     private RouterInterface $router;

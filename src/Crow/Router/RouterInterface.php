@@ -3,9 +3,8 @@ declare(strict_types=1);
 
 namespace Crow\Router;
 
-
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Message\RequestInterface;
 
 interface RouterInterface
 {
@@ -26,6 +25,6 @@ interface RouterInterface
 
     public function head(string $route, mixed $handler);
 
-    public function dispatch(ServerRequestInterface $request);
+    public function dispatch(RequestInterface $request);
 
 }

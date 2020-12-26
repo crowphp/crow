@@ -3,42 +3,32 @@
 require 'vendor/autoload.php';
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
-use Crow\Server;
+use Psr\Http\Message\RequestInterface;
+use Crow\Http\Server\Factory as CrowServer;
 use Crow\Router\RouterInterface;
 
 
-$app = new Server;
+$app = CrowServer::create(CrowServer::SWOOLE_SERVER);
 $router = Crow\Router\Factory::make();
 
-$router->get('/', function (ServerRequestInterface $request, ResponseInterface $response) use ($app) {
-
-    $promise = new React\Promise\Promise(function ($resolve, $reject) use ($app) {
-        $app->getLoop()->addTimer(10, function () use ($resolve) {
-            $resolve();
-        });
-    });
-    return $promise->then(function () use ($response) {
-        $response->getBody()->write('After 10 seconds');
-        return $response
-            ->withHeader('Content-Type', 'html')
-            ->withHeader('Set-Cookie', urlencode('username') . '=' . urlencode('test'));
-    });
-
+$router->get('/', function (RequestInterface $request, ResponseInterface $response) {
+    sleep(20);
+    $response->getBody()->write('Hello World home');
+    return $response;
 });
 
-$router->get('/id/{id}', function (ServerRequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
+$router->get('/id/{id}', function (RequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
     $response->getBody()->write('Hello World' . $id);
     return $response;
 });
 
 $router->addGroup('/yousaf', function (RouterInterface $router) {
-    $router->get('/sunny/id/{id}', function (ServerRequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
+    $router->get('/sunny/id/{id}', function (RequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
         $response->getBody()->write(json_encode(["message" => $id]));
         return $response->withHeader('Content-Type', 'application/json');;
     });
 
-    $router->get('/mani/id/{id}', function (ServerRequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
+    $router->get('/mani/id/{id}', function (RequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
         $response->getBody()->write('Mani ' . $id);
         throw new Exception('Hey i am an exception');
     });

@@ -1,9 +1,11 @@
 <?php
 declare(strict_types=1);
+
 namespace Crow\Router;
 
 use Crow\ResponseBuilder;
 use FastRoute;
+use Psr\Http\Message\RequestInterface;
 use React\Http\Message\Response;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -155,10 +157,10 @@ class FastRouter implements RouterInterface
     }
 
     /**
-     * @param ServerRequestInterface $request
+     * @param RequestInterface $request
      * @return ResponseInterface
      */
-    public function dispatch(ServerRequestInterface $request)
+    public function dispatch(RequestInterface $request): ResponseInterface
     {
         $dispatcher = $this->makeDispatcher();
         $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getUri()->getPath());
