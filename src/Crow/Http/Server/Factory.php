@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace Crow\Http\Server;
 
-use Crow\Http\QueueRequestHandler;
 use Crow\Http\Server\Exceptions\InvalidServerType;
 
 class Factory
@@ -13,12 +12,11 @@ class Factory
 
     public static function create(int $serverType): ServerInterface
     {
-        $requestHandler = new QueueRequestHandler();
         switch ($serverType) {
             case self::REACT_SERVER;
-                return new ReactServer($requestHandler);
+                return new ReactServer;
             case self::SWOOLE_SERVER;
-                return new SwooleServer($requestHandler);
+                return new SwooleServer;
         }
 
         throw new InvalidServerType("Invalid server type provided");

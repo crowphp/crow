@@ -15,7 +15,6 @@ use Psr\Http\Server\MiddlewareInterface;
 abstract class BaseServer implements ServerInterface
 {
 
-
     protected RouterInterface $router;
     protected mixed $server;
     protected array $eventListeners = [];
@@ -23,8 +22,7 @@ abstract class BaseServer implements ServerInterface
     protected array $invalidEvents = ['request'];
     protected array $middleware = [];
 
-
-    public function __construct(protected QueueRequestHandler $requestHandler)
+    public function __construct()
     {
     }
 
