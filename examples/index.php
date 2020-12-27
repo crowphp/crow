@@ -8,7 +8,7 @@ use Crow\Http\Server\Factory as CrowServer;
 use Crow\Router\RouterInterface;
 
 
-$app = CrowServer::create(CrowServer::SWOOLE_SERVER);
+$app = CrowServer::create(CrowServer::REACT_SERVER);
 $router = Crow\Router\Factory::make();
 
 $router->get('/', function (RequestInterface $request, ResponseInterface $response) {
@@ -39,12 +39,17 @@ $app->withRouter($router);
 //Uncaught Exceptions
 
 $app->use(function ($request, $next) {
-    echo "This is a global middleware\n";
-    return $next($request);
+    echo "This is a global middleware 1\n";
+    return $next->handle($request);
 });
 
-$app->on('error', function ($error) {
-    var_dump($error->getMessage());
+$app->use(function ($request, $next) {
+    echo "This is a global middleware 2\n";
+    return $next->handle($request);
 });
+
+/*$app->on('error', function ($error) {
+    var_dump($error->getMessage());
+});*/
 
 $app->listen(5005);

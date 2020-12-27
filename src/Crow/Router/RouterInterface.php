@@ -25,6 +25,6 @@ interface RouterInterface
 
     public function head(string $route, mixed $handler);
 
-    public function dispatch(RequestInterface $request);
+    public function dispatch(RequestInterface $request): ResponseInterface;
 
 }
