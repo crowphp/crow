@@ -1,15 +1,12 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Crow\Http\Server;
-
 
 use Crow\Http\QueueRequestHandler;
 use Crow\Http\Server\Exceptions\InvalidEventType;
 use Crow\Router\RouterInterface;
 use Crow\Router\RoutingMiddleware;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
 abstract class BaseServer implements ServerInterface
@@ -22,20 +19,11 @@ abstract class BaseServer implements ServerInterface
     protected array $invalidEvents = ['request'];
     protected array $middleware = [];
 
-    public function __construct()
-    {
-    }
-
     protected function attachListeners()
     {
         foreach ($this->eventListeners as $event => $handler) {
             $this->server->on($event, $handler);
         }
-    }
-
-    protected function handle(RequestInterface $request): ResponseInterface
-    {
-        return $this->requestHandler->handle($request);
     }
 
     protected function makeMiddlewareHandlerForRequest(): QueueRequestHandler

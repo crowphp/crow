@@ -9,9 +9,6 @@ use Swoole\Http\Response;
 use Crow\Http\RequestFactory;
 use Crow\Http\PsrToSwooleResponseBuilder;
 
-/**
- * TODO: Add functionality to handle events
- */
 final class SwooleServer extends BaseServer
 {
 
@@ -32,11 +29,6 @@ final class SwooleServer extends BaseServer
         $this->loopTimeout();
         $this->server->start();
 
-    }
-
-    public function withTimeout(int $seconds)
-    {
-        $this->loopTimeoutSeconds = $seconds;
     }
 
     private function loopTimeout()

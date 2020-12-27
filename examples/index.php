@@ -35,7 +35,7 @@ $router->addGroup('/yousaf', function (RouterInterface $router) {
 });
 $app->withRouter($router);
 
-//$app->withTimeout(20);
+$app->withTimeout(5);
 //Uncaught Exceptions
 
 $app->use(function (RequestInterface $request, $next) {
