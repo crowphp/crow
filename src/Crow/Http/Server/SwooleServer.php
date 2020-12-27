@@ -29,12 +29,24 @@ final class SwooleServer extends BaseServer
                 $response
             )->end();
         });
-
+        $this->loopTimeout();
         $this->server->start();
+
     }
 
     public function withTimeout(int $seconds)
     {
-        // TODO: Implement withTimeout() method.
+        $this->loopTimeoutSeconds = $seconds;
+    }
+
+    private function loopTimeout()
+    {
+        if ($this->loopTimeoutSeconds > 0) {
+            $app = $this;
+            $this->server->tick($this->loopTimeoutSeconds * 1000, function () use ($app) {
+                echo "Loop timeout enabled, stopping server" . PHP_EOL;
+                $app->server->stop();
+            });
+        }
     }
 }
