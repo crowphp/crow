@@ -1,5 +1,6 @@
 <?php
 declare(strict_types=1);
+
 namespace Crow\Http;
 
 use Psr\Http\Message\ResponseInterface;
@@ -13,10 +14,10 @@ class PsrToSwooleResponseBuilder
     public function toSwoole(ResponseInterface $psrResponse, Response $swooleResponse): Response
     {
         $this->copyHeaders($psrResponse, $swooleResponse);
-        $this->copyBody($psrResponse, $swooleResponse);
         $swooleResponse->status($psrResponse->getStatusCode());
-
+        $this->copyBody($psrResponse, $swooleResponse);
         return $swooleResponse;
+
     }
 
     private function copyHeaders($psrResponse, $swooleResponse)
