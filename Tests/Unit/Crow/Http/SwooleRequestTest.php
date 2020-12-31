@@ -6,6 +6,7 @@ use Crow\Http\SwooleRequest;
 use Laminas\Diactoros\Stream;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use PHPUnit\Framework\TestCase;
+use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Swoole\Http\Request as SwooleRawReq;
@@ -13,7 +14,7 @@ use Swoole\Http\Request as SwooleRawReq;
 class SwooleRequestTest extends TestCase
 {
 
-    private function makeRequest()
+    private function makeRequest(): RequestInterface
     {
         $swoole = new SwooleRawReq();
         $swoole->server['query_string'] = "foo=bar";
