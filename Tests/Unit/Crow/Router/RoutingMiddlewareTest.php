@@ -17,7 +17,7 @@ class RoutingMiddlewareTest extends TestCase
     use ProphecyTrait;
 
 
-    public function testifRoutingMiddlewareCalledWithoutAnyRoutesShouldReturnNotFound()
+    public function testIfRoutingMiddlewareCalledWithoutAnyRoutesShouldReturnNotFound()
     {
         $request = ServerRequestFactory::fromGlobals(
             $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES
