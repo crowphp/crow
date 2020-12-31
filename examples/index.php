@@ -24,8 +24,9 @@ $router->get('/id/{id}', function (RequestInterface $request, ResponseInterface 
 
 $router->addGroup('/yousaf', function (RouterInterface $router) {
     $router->get('/sunny/id/{id}', function (RequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
+
         $response->getBody()->write(json_encode(["message" => $id]));
-        return $response->withHeader('Content-Type', 'application/json');;
+        return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
     });
 
     $router->get('/mani/id/{id}', function (RequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
@@ -48,8 +49,12 @@ $app->use(function (RequestInterface $request, $next) {
     return $next->handle($request);
 });
 
-/*$app->on('error', function ($error) {
+$app->on('workererror', function ($error) {
     var_dump($error->getMessage());
-});*/
+});
 
-$app->listen(5005);
+$app->on('start', function ($server) {
+    echo "CrowPHP server is listening on port $server->host:$server->port " . PHP_EOL;
+});
+
+$app->listen(5005, "0.0.0.0");

@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Crow\Http\Server;
 
@@ -12,9 +11,10 @@ interface ServerInterface
      * Encapsulating function that initialize and starts all the required
      * services before listening on the given port for HTTP calls.
      * @param int $port
+     * @param string $host
      */
 
-    public function listen(int $port = 5000);
+    public function listen(int $port = 5000, string $host="127.0.0.1");
 
     /**
      * Function to set timeout after which the server loop stops

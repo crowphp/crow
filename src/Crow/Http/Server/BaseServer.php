@@ -1,5 +1,4 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Crow\Http\Server;
 
@@ -21,8 +20,8 @@ abstract class BaseServer implements ServerInterface
 
     protected function attachListeners()
     {
-        foreach ($this->eventListeners as $event => $handler) {
-            $this->server->on($event, $handler);
+        foreach ($this->eventListeners as $eventListener) {
+            $this->server->on($eventListener["eventName"], $eventListener["callback"]);
         }
     }
 
@@ -42,7 +41,10 @@ abstract class BaseServer implements ServerInterface
         if (in_array($event, $this->invalidEvents)) {
             throw new InvalidEventType("This event type is not permitted");
         }
-        array_push($this->eventListeners, $event);
+        array_push($this->eventListeners, [
+            "eventName" => $event,
+            "callback" => $callback
+        ]);
     }
 
     /**

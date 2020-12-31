@@ -1,11 +1,9 @@
-<?php
-declare(strict_types=1);
+<?php declare(strict_types=1);
 
 namespace Tests\Unit\Crow;
 
 use Crow\ErrorHandler;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\ResponseInterface;
 
 
 class ErrorHandlerTest extends TestCase
