@@ -175,16 +175,10 @@ class FastRouter implements RouterInterface
             case FastRoute\Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 $vars = $routeInfo[2];
-                //  try {
                 return $handler(
                     $request,
                     new Response(200, DefaultHeaders::get()),
                     ...array_values($vars));
-            /*    } catch (\Exception | \LogicException $exception) {
-                    return ResponseBuilder::makeResponseWithCodeAndBody(
-                        500,
-                        ErrorHandler::exceptionToBody($exception));
-                }*/
         }
 
         throw new RoutingLogicException('Something went wrong in routing.');

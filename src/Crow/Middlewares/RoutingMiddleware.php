@@ -3,7 +3,6 @@
 namespace Crow\Middlewares;
 
 use Crow\Router\RouterInterface;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
