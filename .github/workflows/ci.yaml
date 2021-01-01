@@ -10,9 +10,10 @@ jobs:
       - uses: php-actions/composer@v5
         with:
           php_version: 8.0
-      - name: PHPUnit Tests
-        uses: php-actions/phpunit@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          php_version: 8.0
-          bootstrap: vendor/autoload.php
-          configuration: phpunit.xml
+          php-version: '8.0'
+          extensions: swoole
+          coverage: xdebug
+          tools: php-cs-fixer, phpunit
