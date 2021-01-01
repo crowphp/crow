@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Unit\Crow;
+namespace Tests\Unit\Crow\Http;
 
 use Crow\Http\DefaultHeaders;
 use PHPUnit\Framework\TestCase;
