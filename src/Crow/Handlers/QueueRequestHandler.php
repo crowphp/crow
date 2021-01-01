@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace Crow\Http;
+namespace Crow\Handlers;
 
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -21,7 +21,7 @@ class QueueRequestHandler implements RequestHandlerInterface
         $this->middleware[] = $middleware;
     }
 
-    public function handle(RequestInterface $request): ResponseInterface
+    public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $middleware = array_shift($this->middleware);
 

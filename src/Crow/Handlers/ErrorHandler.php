@@ -1,14 +1,12 @@
 <?php declare(strict_types=1);
 
-namespace Crow;
+namespace Crow\Handlers;
 
 use Exception;
 use LogicException;
 
 class ErrorHandler
 {
-
-
 
     public static function exceptionToBody(Exception|LogicException $exception): string
     {

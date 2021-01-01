@@ -6,6 +6,7 @@ use Crow\Http\RequestFactory;
 use Crow\Http\SwooleRequest;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request as SwooleReq;
 use React\Http\Message\ServerRequest as ReactReq;
 
@@ -18,8 +19,7 @@ class RequestFactoryTest extends TestCase
             new SwooleReq()
         );
 
-        $this->assertEquals(true, $request instanceof RequestInterface);
-        $this->assertEquals(true, $request instanceof SwooleRequest);
+        $this->assertEquals(true, $request instanceof ServerRequestInterface);
     }
 
     public function testShouldReturnRequestInterfaceWhenReactRequestGivenToCreate()
@@ -31,7 +31,7 @@ class RequestFactoryTest extends TestCase
             )
         );
 
-        $this->assertEquals(true, $request instanceof RequestInterface);
+        $this->assertEquals(true, $request instanceof ServerRequestInterface);
         $this->assertEquals(true, $request instanceof ReactReq);
     }
 }

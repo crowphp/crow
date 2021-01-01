@@ -2,15 +2,25 @@
 
 namespace Test\Unit\Crow\Router;
 
+use Exception;
 use Crow\Router\FastRouter;
-use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Laminas\Diactoros\Request;
-use Exception;
+use Psr\Http\Message\ServerRequestInterface;
+use PHPUnit\Framework\TestCase;
+use Laminas\Diactoros\ServerRequestFactory;
 
 class FastRouterTest extends TestCase
 {
+
+    private function makeRequest($uri, $method): ServerRequestInterface
+    {
+        $requestFactory = new ServerRequestFactory();
+        return $requestFactory->createServerRequest(
+            $method,
+            $uri
+        );
+    }
 
     public function testPatch()
     {
@@ -19,11 +29,7 @@ class FastRouterTest extends TestCase
             return $response->withStatus(303);
         });
         $this->assertEquals(303, $router->dispatch(
-            new Request(
-                '/patch',
-                'PATCH',
-                "php://memory"
-            )
+            $this->makeRequest('/patch', 'PATCH')
         )->getStatusCode());
     }
 
@@ -34,38 +40,28 @@ class FastRouterTest extends TestCase
             return $response->withStatus(304);
         });
         $this->assertEquals(304, $router->dispatch(
-            new Request(
-                '/head',
-                'HEAD',
-                "php://memory"
-            )
+            $this->makeRequest('/head', 'HEAD')
         )->getStatusCode());
     }
 
     public function testDispatchExceptionHandling()
     {
         $router = new FastRouter();
+
         $router->get('/get', function ($request, ResponseInterface $response) {
             throw new Exception('I am an exception');
         });
-        $this->assertEquals(500, $router->dispatch(
-            new Request(
-                '/get',
-                'GET',
-                "php://memory"
-            )
-        )->getStatusCode());
+        $this->expectException(Exception::class);
+        $router->dispatch(
+            $this->makeRequest('/get', 'GET')
+        );
     }
 
     public function testDispatchNotFound()
     {
         $router = new FastRouter();
         $this->assertEquals(404, $router->dispatch(
-            new Request(
-                '/get',
-                'GET',
-                "php://memory"
-            )
+            $this->makeRequest('/head', 'HEAD')
         )->getStatusCode());
     }
 
@@ -76,11 +72,7 @@ class FastRouterTest extends TestCase
             return $response;
         });
         $this->assertEquals(405, $router->dispatch(
-            new Request(
-                '/get',
-                'POST',
-                "php://memory"
-            )
+            $this->makeRequest('/get', 'POST')
         )->getStatusCode());
     }
 
@@ -91,11 +83,7 @@ class FastRouterTest extends TestCase
             return $response->withStatus(305);
         });
         $this->assertEquals(305, $router->dispatch(
-            new Request(
-                '/delete',
-                'DELETE',
-                "php://memory"
-            )
+            $this->makeRequest('/delete', 'DELETE')
         )->getStatusCode());
     }
 
@@ -108,11 +96,7 @@ class FastRouterTest extends TestCase
             return $response->withStatus(306)->withHeader('Test', 'TestVal');
         });
         $response = $router->dispatch(
-            new Request(
-                '/post',
-                'POST',
-                "php://memory"
-            )
+            $this->makeRequest('/post', 'POST')
         );
 
         $this->assertEquals(306, $response->getStatusCode());
@@ -129,11 +113,7 @@ class FastRouterTest extends TestCase
             return $response->withStatus(306)->withHeader('Test', 'TestVal');
         });
         $response = $router->dispatch(
-            new Request(
-                '/post',
-                'POST',
-                "php://memory"
-            )
+            $this->makeRequest('/post', 'POST')
         );
 
         $this->assertEquals(306, $response->getStatusCode());
@@ -149,11 +129,7 @@ class FastRouterTest extends TestCase
             return $response->withStatus(200);
         });
         $this->assertEquals(200, $router->dispatch(
-            new Request(
-                '/get',
-                'GET',
-                "php://memory"
-            )
+            $this->makeRequest('/get', 'GET')
         )->getStatusCode());
     }
 
@@ -166,11 +142,7 @@ class FastRouterTest extends TestCase
             return $response->withStatus(200);
         });
         $response = $router->dispatch(
-            new Request(
-                '/get?foo=bar',
-                'GET',
-                "php://memory"
-            )
+            $this->makeRequest('/get?foo=bar', 'GET')
         );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("foo=bar", $response->getBody()->__toString());
@@ -189,18 +161,10 @@ class FastRouterTest extends TestCase
             return $response->withStatus(200);
         });
         $response = $router->dispatch(
-            new Request(
-                '/get/id/1212/sunny/day',
-                'GET',
-                "php://memory"
-            )
+            $this->makeRequest('/get/id/1212/sunny/day', 'GET')
         );
         $response2 = $router->dispatch(
-            new Request(
-                '/get/id/1212',
-                'GET',
-                "php://memory"
-            )
+            $this->makeRequest('/get/id/1212', 'GET')
         );
 
         $this->assertEquals(200, $response->getStatusCode());

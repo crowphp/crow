@@ -2,10 +2,11 @@
 
 namespace Crow\Http\Server;
 
-use Crow\Http\QueueRequestHandler;
+use Crow\Handlers\QueueRequestHandler;
 use Crow\Http\Server\Exceptions\InvalidEventType;
+use Crow\Middlewares\ErrorMiddleware;
+use Crow\Middlewares\RoutingMiddleware;
 use Crow\Router\RouterInterface;
-use Crow\Router\RoutingMiddleware;
 use Psr\Http\Server\MiddlewareInterface;
 
 abstract class BaseServer implements ServerInterface
@@ -28,6 +29,7 @@ abstract class BaseServer implements ServerInterface
     protected function makeMiddlewareHandlerForRequest(): QueueRequestHandler
     {
         $requestHandler = new QueueRequestHandler();
+        $requestHandler->add(new ErrorMiddleware());
         foreach ($this->middleware as $middleware) {
             $requestHandler->add($middleware);
         }

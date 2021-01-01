@@ -3,13 +3,14 @@
 namespace Crow\Http;
 
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\StreamInterface;
 use Swoole\Http\Request;
 
-class SwooleRequest implements RequestInterface
+class SwooleRequest implements ServerRequestInterface
 {
     private string $requestTarget;
     private UriInterface $uri;
@@ -203,5 +204,70 @@ class SwooleRequest implements RequestInterface
         $new = clone $this;
         $new->body = $body;
         return $new;
+    }
+
+    public function getServerParams()
+    {
+        // TODO: Implement getServerParams() method.
+    }
+
+    public function getCookieParams()
+    {
+        // TODO: Implement getCookieParams() method.
+    }
+
+    public function withCookieParams(array $cookies)
+    {
+        // TODO: Implement withCookieParams() method.
+    }
+
+    public function getQueryParams()
+    {
+        // TODO: Implement getQueryParams() method.
+    }
+
+    public function withQueryParams(array $query)
+    {
+        // TODO: Implement withQueryParams() method.
+    }
+
+    public function getUploadedFiles()
+    {
+        // TODO: Implement getUploadedFiles() method.
+    }
+
+    public function withUploadedFiles(array $uploadedFiles)
+    {
+        // TODO: Implement withUploadedFiles() method.
+    }
+
+    public function getParsedBody()
+    {
+        // TODO: Implement getParsedBody() method.
+    }
+
+    public function withParsedBody($data)
+    {
+        // TODO: Implement withParsedBody() method.
+    }
+
+    public function getAttributes()
+    {
+        // TODO: Implement getAttributes() method.
+    }
+
+    public function getAttribute($name, $default = null)
+    {
+        // TODO: Implement getAttribute() method.
+    }
+
+    public function withAttribute($name, $value)
+    {
+        // TODO: Implement withAttribute() method.
+    }
+
+    public function withoutAttribute($name)
+    {
+        // TODO: Implement withoutAttribute() method.
     }
 }

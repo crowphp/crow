@@ -2,14 +2,13 @@
 
 namespace Crow\Router;
 
-use Crow\ResponseBuilder;
+use Crow\Http\DefaultHeaders;
+use Crow\Http\ResponseBuilder;
 use FastRoute;
 use Psr\Http\Message\RequestInterface;
-use React\Http\Message\Response;
-use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Crow\ErrorHandler;
-use Crow\DefaultHeaders;
+use Psr\Http\Message\ServerRequestInterface;
+use React\Http\Message\Response;
 use Crow\Router\Exceptions\RoutingLogicException;
 
 class FastRouter implements RouterInterface
@@ -156,10 +155,10 @@ class FastRouter implements RouterInterface
     }
 
     /**
-     * @param RequestInterface $request
+     * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
-    public function dispatch(RequestInterface $request): ResponseInterface
+    public function dispatch(ServerRequestInterface $request): ResponseInterface
     {
         $dispatcher = $this->makeDispatcher();
         $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getUri()->getPath());
@@ -176,16 +175,16 @@ class FastRouter implements RouterInterface
             case FastRoute\Dispatcher::FOUND:
                 $handler = $routeInfo[1];
                 $vars = $routeInfo[2];
-                try {
-                    return $handler(
-                        $request,
-                        new Response(200, DefaultHeaders::get()),
-                        ...array_values($vars));
-                } catch (\Exception | \LogicException $exception) {
+                //  try {
+                return $handler(
+                    $request,
+                    new Response(200, DefaultHeaders::get()),
+                    ...array_values($vars));
+            /*    } catch (\Exception | \LogicException $exception) {
                     return ResponseBuilder::makeResponseWithCodeAndBody(
                         500,
                         ErrorHandler::exceptionToBody($exception));
-                }
+                }*/
         }
 
         throw new RoutingLogicException('Something went wrong in routing.');

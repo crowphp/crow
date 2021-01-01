@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Crow;
 
-use Crow\ErrorHandler;
+use Crow\Handlers\ErrorHandler;
 use PHPUnit\Framework\TestCase;
 
 

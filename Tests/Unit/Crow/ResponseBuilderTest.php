@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Crow;
 
-use Crow\ResponseBuilder;
+use Crow\Http\ResponseBuilder;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
 use \TypeError;

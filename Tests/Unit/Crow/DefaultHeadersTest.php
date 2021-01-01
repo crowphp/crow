@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Crow;
 
-use Crow\DefaultHeaders;
+use Crow\Http\DefaultHeaders;
 use PHPUnit\Framework\TestCase;
 
 class DefaultHeadersTest extends TestCase

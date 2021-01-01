@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Crow;
+namespace Crow\Http;
 
 use Psr\Http\Message\ResponseInterface;
 use React\Http\Message\Response;

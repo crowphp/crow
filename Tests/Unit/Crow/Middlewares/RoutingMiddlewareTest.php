@@ -1,21 +1,30 @@
 <?php declare(strict_types=1);
 
-namespace Test\Unit\Crow\Router;
+namespace Test\Unit\Crow\Middlewares;
 
-use Crow\Http\QueueRequestHandler;
+use Crow\Handlers\QueueRequestHandler;
 use Crow\Router\Factory as RouterFactory;
-use Crow\Router\RoutingMiddleware;
+use Crow\Middlewares\RoutingMiddleware;
 use Laminas\Diactoros\ServerRequestFactory;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ResponseInterface;
-use Laminas\Diactoros\Request;
+use Psr\Http\Message\ServerRequestInterface;
 
 
 class RoutingMiddlewareTest extends TestCase
 {
     use ProphecyTrait;
 
+
+    private function makeRequest($uri, $method): ServerRequestInterface
+    {
+        $requestFactory = new ServerRequestFactory();
+        return $requestFactory->createServerRequest(
+            $method,
+            $uri
+        );
+    }
 
     public function testIfRoutingMiddlewareCalledWithoutAnyRoutesShouldReturnNotFound()
     {
@@ -43,11 +52,7 @@ class RoutingMiddlewareTest extends TestCase
         $routingMiddleware = new RoutingMiddleware($router);
 
         $response = $routingMiddleware->process(
-            new Request(
-                '/',
-                'GET',
-                "php://memory"
-            ),
+            $this->makeRequest('/', 'GET'),
             $this->prophesize(QueueRequestHandler::class)->reveal()
         );
 
@@ -56,7 +61,8 @@ class RoutingMiddlewareTest extends TestCase
         $this->assertEquals(true, $response instanceof ResponseInterface);
     }
 
-    public function testRoutingMiddlewareReturnsResponseObject(){
+    public function testRoutingMiddlewareReturnsResponseObject()
+    {
         $request = ServerRequestFactory::fromGlobals(
             $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES
         );

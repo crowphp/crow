@@ -3,7 +3,6 @@
 namespace Crow\Http\Server;
 
 use React;
-use Crow\Router\RouterInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\LoopInterface;
 

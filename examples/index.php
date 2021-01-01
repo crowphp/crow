@@ -3,9 +3,10 @@
 require 'vendor/autoload.php';
 
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface as RequestInterface;
 use Crow\Http\Server\Factory as CrowServer;
 use Crow\Router\RouterInterface;
+use Psr\Http\Server\RequestHandlerInterface;
 
 
 $app = CrowServer::create(CrowServer::SWOOLE_SERVER);
@@ -39,12 +40,12 @@ $app->withRouter($router);
 //$app->withTimeout(5);
 //Uncaught Exceptions
 
-$app->use(function (RequestInterface $request, $next) {
+$app->use(function (RequestInterface $request, RequestHandlerInterface $next) {
     echo "This is a global middleware 1\n";
     return $next->handle($request);
 });
 
-$app->use(function (RequestInterface $request, $next) {
+$app->use(function (RequestInterface $request, RequestHandlerInterface $next) {
     echo "This is a global middleware 2\n";
     return $next->handle($request);
 });
