@@ -3,15 +3,19 @@
 namespace Test\Unit\Crow\Router;
 
 use Exception;
+use Crow\Router\RouterInterface;
 use Crow\Router\FastRouter;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use PHPUnit\Framework\TestCase;
 use Laminas\Diactoros\ServerRequestFactory;
+use PHPUnit\Framework\TestCase;
+use phpmock\phpunit\PHPMock;
+
 
 class FastRouterTest extends TestCase
 {
+    use PHPMock;
 
     private function makeRequest($uri, $method): ServerRequestInterface
     {
@@ -84,6 +88,38 @@ class FastRouterTest extends TestCase
         });
         $this->assertEquals(305, $router->dispatch(
             $this->makeRequest('/delete', 'DELETE')
+        )->getStatusCode());
+    }
+
+    public function testPut()
+    {
+        $router = new FastRouter();
+        $router->put('/put', function ($request, ResponseInterface $response) {
+            return $response->withStatus(200);
+        });
+        $this->assertEquals(200, $router->dispatch(
+            $this->makeRequest('/put', 'PUT')
+        )->getStatusCode());
+    }
+
+
+    public function testAddGroup()
+    {
+        $router = new FastRouter();
+        $router->addGroup('/group', function (RouterInterface $router) {
+            $router->get('/get', function ($request, ResponseInterface $response) {
+                return $response->withStatus(205);
+            });
+            $router->get('/get2', function ($request, ResponseInterface $response) {
+                return $response->withStatus(206);
+            });
+        });
+        $this->assertEquals(205, $router->dispatch(
+            $this->makeRequest('/group/get', 'GET')
+        )->getStatusCode());
+
+        $this->assertEquals(206, $router->dispatch(
+            $this->makeRequest('/group/get2', 'GET')
         )->getStatusCode());
     }
 

@@ -6,6 +6,6 @@ class Factory
 {
     public static function make(): RouterInterface
     {
-        return new FastRouter;
+        return new FastRouter("FastRoute\simpleDispatcher");
     }
 }

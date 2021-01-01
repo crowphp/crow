@@ -2,7 +2,6 @@
 
 namespace Crow\Http;
 
-use Laminas\Diactoros\ServerRequestFactory;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request as SwooleRawReq;

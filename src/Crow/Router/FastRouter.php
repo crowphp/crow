@@ -2,10 +2,10 @@
 
 namespace Crow\Router;
 
+use FastRoute;
+use function FastRoute\simpleDispatcher as simpleDispatcher;
 use Crow\Http\DefaultHeaders;
 use Crow\Http\ResponseBuilder;
-use FastRoute;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use React\Http\Message\Response;
@@ -17,11 +17,7 @@ class FastRouter implements RouterInterface
     private const HTTP_METHOD_LABEL = "HTTP_METHOD";
     private const ROUTE_LABEL = "ROUTE";
     private const HANDLER_LABEL = "HANDLER";
-
-
-    public function __construct(private array $routeMap = [])
-    {
-    }
+    private array $routeMap = [];
 
     /**
      * Adds a route to the collection.
@@ -144,7 +140,7 @@ class FastRouter implements RouterInterface
      */
     private function makeDispatcher(): FastRoute\Dispatcher
     {
-        return FastRoute\simpleDispatcher(function (FastRoute\RouteCollector $r) {
+        return simpleDispatcher(function (FastRoute\RouteCollector $r) {
             foreach ($this->routeMap as $route) {
                 $r->addRoute(
                     $route[self::HTTP_METHOD_LABEL],
