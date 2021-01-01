@@ -12,6 +12,8 @@ jobs:
           php_version: 8.0
       - name: PHPUnit Tests
         uses: php-actions/phpunit@v2
+        env:
+          XDEBUG_MODE: coverage
         with:
           php_extensions: swoole xdebug
           php_version: 8.0
