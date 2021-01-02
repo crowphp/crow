@@ -14,10 +14,14 @@ use Crow\Router\Exceptions\RoutingLogicException;
 class FastRouter implements RouterInterface
 {
     protected string $currentGroupPrefix = "";
-    private const HTTP_METHOD_LABEL = "HTTP_METHOD";
-    private const ROUTE_LABEL = "ROUTE";
-    private const HANDLER_LABEL = "HANDLER";
+    public const HTTP_METHOD_LABEL = "HTTP_METHOD";
+    public const ROUTE_LABEL = "ROUTE";
+    public const HANDLER_LABEL = "HANDLER";
     private array $routeMap = [];
+
+    public function __construct(private DispatcherFactoryInterface $dispatcherFactory)
+    {
+    }
 
     /**
      * Adds a route to the collection.
@@ -136,27 +140,12 @@ class FastRouter implements RouterInterface
     }
 
     /**
-     * @return FastRoute\Dispatcher
-     */
-    private function makeDispatcher(): FastRoute\Dispatcher
-    {
-        return simpleDispatcher(function (FastRoute\RouteCollector $r) {
-            foreach ($this->routeMap as $route) {
-                $r->addRoute(
-                    $route[self::HTTP_METHOD_LABEL],
-                    $route[self::ROUTE_LABEL],
-                    $route[self::HANDLER_LABEL]);
-            }
-        });
-    }
-
-    /**
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
     public function dispatch(ServerRequestInterface $request): ResponseInterface
     {
-        $dispatcher = $this->makeDispatcher();
+        $dispatcher = $this->dispatcherFactory->make($this->routeMap);
         $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getUri()->getPath());
 
         switch ($routeInfo[0]) {

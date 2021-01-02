@@ -27,7 +27,6 @@
   "require-dev": {
     "phpunit/phpunit": "^9.5",
     "phpspec/prophecy-phpunit": "^2.0",
-    "php-mock/php-mock-phpunit": "^2.6",
     "laminas/laminas-diactoros": "^2.5"
   }
 }

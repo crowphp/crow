@@ -4,8 +4,11 @@ namespace Crow\Router;
 
 class Factory
 {
+    /**
+     * @return RouterInterface
+     */
     public static function make(): RouterInterface
     {
-        return new FastRouter("FastRoute\simpleDispatcher");
+        return new FastRouter(new FastRouteDispatcher());
     }
 }
