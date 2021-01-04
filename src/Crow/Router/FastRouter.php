@@ -3,7 +3,6 @@
 namespace Crow\Router;
 
 use FastRoute;
-use function FastRoute\simpleDispatcher as simpleDispatcher;
 use Crow\Http\DefaultHeaders;
 use Crow\Http\ResponseBuilder;
 use Psr\Http\Message\ResponseInterface;
