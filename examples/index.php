@@ -31,6 +31,11 @@ $router->get('/sleep5', function (RequestInterface $request, ResponseInterface $
     return $response;
 });
 
+$router->post('/file', function (RequestInterface $request, ResponseInterface $response) {
+    $files = $request->getUploadedFiles();
+    $response->getBody()->write('File Uploaded ' . $files["screenshot_png"]["name"]);
+    return $response;
+});
 $router->get('/id/{id}', function (RequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
     $response->getBody()->write('Hello World' . $id);
     return $response;
