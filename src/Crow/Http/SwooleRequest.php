@@ -4,17 +4,24 @@ namespace Crow\Http;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\StreamFactoryInterface;
+use Psr\Http\Message\UriFactoryInterface;
 use Psr\Http\Message\UriInterface;
 use Psr\Http\Message\StreamInterface;
 use Swoole\Http\Request;
 
 class SwooleRequest implements ServerRequestInterface
 {
-    private string $requestTarget;
     private UriInterface $uri;
+    private StreamInterface $body;
+    private string $requestTarget;
     private string $method;
+    private array $serverParams;
+    private array $cookies = [];
+    private array $queryParams = [];
+    private array $fileParams;
+    private mixed $parsedBody;
+    private array $attributes;
     private string $protocol;
 
     public function __construct(
@@ -23,6 +30,21 @@ class SwooleRequest implements ServerRequestInterface
         private StreamFactoryInterface $streamFactory
     )
     {
+
+        $this->serverParams = $this->swooleRequest->server ?? [];
+        $this->fileParams = $this->swooleRequest->files ?? [];
+        $this->cookies = $this->swooleRequest->cookie ?? [];
+
+        $query = $this->getUri()->getQuery();
+        if ($query !== '') {
+            \parse_str($query, $this->queryParams);
+        }
+
+        $query = $this->getUri()->getQuery();
+        if ($query !== '') {
+            \parse_str($query, $this->queryParams);
+        }
+
     }
 
     public function getRequestTarget(): string
@@ -106,7 +128,9 @@ class SwooleRequest implements ServerRequestInterface
 
     public function getProtocolVersion(): string
     {
-        return $this->protocol ?? ($this->protocol = '1.1');
+        return $this->protocol ??
+            ($this->protocol =
+                $this->swooleRequest->server['server_protocol'] ?? '1.1');
     }
 
     public function withProtocolVersion($version): SwooleRequest
@@ -116,6 +140,9 @@ class SwooleRequest implements ServerRequestInterface
         return $new;
     }
 
+    /**
+     * @return array
+     */
     public function getHeaders(): array
     {
         return $this->swooleRequest->header;
@@ -206,68 +233,83 @@ class SwooleRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function getServerParams()
+    public function getServerParams(): array
     {
-        // TODO: Implement getServerParams() method.
+        return $this->serverParams;
     }
 
-    public function getCookieParams()
+    public function getCookieParams(): array
     {
-        // TODO: Implement getCookieParams() method.
+        return $this->cookies;
     }
 
-    public function withCookieParams(array $cookies)
+    public function withCookieParams(array $cookies): ServerRequestInterface
     {
-        // TODO: Implement withCookieParams() method.
+        $new = clone $this;
+        $new->cookies = $cookies;
+        return $new;
     }
 
-    public function getQueryParams()
+    public function getQueryParams(): array
     {
-        // TODO: Implement getQueryParams() method.
+        return $this->queryParams;
     }
 
-    public function withQueryParams(array $query)
+    public function withQueryParams(array $query): ServerRequestInterface
     {
-        // TODO: Implement withQueryParams() method.
+        $new = clone $this;
+        $new->queryParams = $query;
+        return $new;
     }
 
-    public function getUploadedFiles()
+    public function getUploadedFiles(): array
     {
-        // TODO: Implement getUploadedFiles() method.
+        return $this->fileParams;
     }
 
-    public function withUploadedFiles(array $uploadedFiles)
+    public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
     {
-        // TODO: Implement withUploadedFiles() method.
+        $new = clone $this;
+        $new->fileParams = $uploadedFiles;
+        return $new;
     }
 
-    public function getParsedBody()
+    public function getParsedBody(): mixed
     {
-        // TODO: Implement getParsedBody() method.
+        return $this->parsedBody;
     }
 
-    public function withParsedBody($data)
+    public function withParsedBody($data): ServerRequestInterface
     {
-        // TODO: Implement withParsedBody() method.
+        $new = clone $this;
+        $new->parsedBody = $data;
+        return $new;
     }
 
     public function getAttributes()
     {
-        // TODO: Implement getAttributes() method.
+        return $this->attributes;
     }
 
     public function getAttribute($name, $default = null)
     {
-        // TODO: Implement getAttribute() method.
+        if (!\array_key_exists($name, $this->attributes)) {
+            return $default;
+        }
+        return $this->attributes[$name];
     }
 
     public function withAttribute($name, $value)
     {
-        // TODO: Implement withAttribute() method.
+        $new = clone $this;
+        $new->attributes[$name] = $value;
+        return $new;
     }
 
     public function withoutAttribute($name)
     {
-        // TODO: Implement withoutAttribute() method.
+        $new = clone $this;
+        unset($new->attributes[$name]);
+        return $new;
     }
 }

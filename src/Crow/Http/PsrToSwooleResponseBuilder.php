@@ -41,13 +41,14 @@ class PsrToSwooleResponseBuilder
         }
 
         $setCookies = SetCookies::fromSetCookieStrings($psrResponse->getHeader('Set-Cookie'));
+        list($domain) = explode(":", $psrResponse->getHeaderLine('Host'));
         foreach ($setCookies->getAll() as $setCookie) {
             $swooleResponse->cookie(
                 $setCookie->getName(),
                 $setCookie->getValue(),
                 $setCookie->getExpires(),
-                $setCookie->getPath(),
-                $setCookie->getDomain(),
+                $setCookie->getPath() ?? "/",
+                $setCookie->getDomain() ?? $domain,
                 $setCookie->getSecure(),
                 $setCookie->getHttpOnly()
             );

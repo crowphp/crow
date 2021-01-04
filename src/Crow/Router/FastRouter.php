@@ -162,7 +162,14 @@ class FastRouter implements RouterInterface
                 $vars = $routeInfo[2];
                 return $handler(
                     $request,
-                    new Response(200, DefaultHeaders::get()),
+                    new Response(200,
+                        array_merge(
+                            DefaultHeaders::get(),
+                            [
+                                "Host" => $request->getHeader("host")
+                            ]
+                        )
+                    ),
                     ...array_values($vars));
         }
 

@@ -12,7 +12,8 @@
     "nikic/fast-route": "^1.3",
     "nyholm/psr7": "^1.3",
     "psr/http-server-handler": "^1.0",
-    "psr/http-server-middleware": "^1.0"
+    "psr/http-server-middleware": "^1.0",
+    "dflydev/fig-cookies": "^1.0"
   },
   "autoload": {
     "psr-4": {

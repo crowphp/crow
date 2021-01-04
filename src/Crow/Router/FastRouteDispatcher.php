@@ -3,14 +3,22 @@
 namespace Crow\Router;
 
 use FastRoute;
+use Exception;
 use function FastRoute\simpleDispatcher;
 
 class FastRouteDispatcher implements DispatcherFactoryInterface
 {
 
+    private array $routeMapSchema = [
+        FastRouter::HTTP_METHOD_LABEL => "",
+        FastRouter::ROUTE_LABEL => "",
+        FastRouter::HANDLER_LABEL => ""
+    ];
+
     /**
      * @param array $routeMap
      * @return FastRoute\Dispatcher
+     * @throws Exception
      */
     public function make(array $routeMap): FastRoute\Dispatcher
     {
@@ -23,4 +31,5 @@ class FastRouteDispatcher implements DispatcherFactoryInterface
             }
         });
     }
+
 }

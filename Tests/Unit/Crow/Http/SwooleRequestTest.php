@@ -20,7 +20,7 @@ class SwooleRequestTest extends TestCase
         $swoole->server['query_string'] = "foo=bar";
         $swoole->server['request_uri'] = "/uri";
         $swoole->server['request_method'] = "GET";
-        $swoole->server['server_protocol'] = "http";
+        $swoole->server['server_protocol'] = "http/1.1";
         $swoole->server['server_port'] = "8080";
         $swoole->header['host'] = "localhost";
         $swoole->header['foo'] = "bar";
@@ -49,7 +49,7 @@ class SwooleRequestTest extends TestCase
     {
 
         $this->assertEquals(
-            "1.1",
+            "http/1.1",
             $this->makeRequest()->getProtocolVersion()
         );
     }
@@ -73,6 +73,18 @@ class SwooleRequestTest extends TestCase
             $request->getHeaderLine("foo2"));
     }
 
+
+    public function testWithAddedHeaderOnExisting()
+    {
+        $request = $this->makeRequest()->withAddedHeader('foo', "bar2");
+        $this->assertEquals(
+            true,
+            $request->hasHeader("foo"));
+        $this->assertEquals(
+            "bar,bar2",
+            $request->getHeaderLine("foo"));
+    }
+
     public function testWithRequestTarget()
     {
         $request = $this->makeRequest()->withRequestTarget("/foo");
@@ -89,6 +101,15 @@ class SwooleRequestTest extends TestCase
         $this->assertEquals(
             false,
             $request->hasHeader("foo"));
+    }
+
+    public function testWithoutHeaderWhenItsAlreadyNotPresent()
+    {
+        $request = $this->makeRequest()->withoutHeader("foo5");
+
+        $this->assertEquals(
+            false,
+            $request->hasHeader("foo5"));
     }
 
     public function testWithBody()
@@ -151,9 +172,10 @@ class SwooleRequestTest extends TestCase
 
     public function testWithUri()
     {
+        $uri = $this->makeUriFactory()->createUri("localhost/uri?foo=bar");
         $this->assertEquals(
-            $this->makeUriFactory()->createUri("localhost/uri?foo=bar"),
-            $this->makeRequest()->getUri());
+            $uri,
+            $this->makeRequest()->withUri($uri)->getUri());
     }
 
     public function testGetHeaders()
@@ -162,6 +184,21 @@ class SwooleRequestTest extends TestCase
             ["foo" => "bar", "host" => "localhost"],
             $this->makeRequest()->getHeaders());
     }
+
+    public function testWithAuthHeaders()
+    {
+        $this->assertEquals(
+            [
+                "foo" => "bar",
+                "host" => "localhost",
+                "authorization" => "Basic 12"
+            ],
+            $this->makeRequest()
+                ->withHeader("authorization", "Basic 12")
+                ->getHeaders()
+        );
+    }
+
 
     public function testWithMethod()
     {

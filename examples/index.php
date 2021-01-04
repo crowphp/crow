@@ -13,8 +13,21 @@ $app = CrowServer::create(CrowServer::SWOOLE_SERVER);
 $router = Crow\Router\Factory::make();
 
 $router->get('/', function (RequestInterface $request, ResponseInterface $response) {
-    sleep(20);
-    $response->getBody()->write('Hello World home');
+
+    $key = 'crow\php';
+    if (isset($request->getCookieParams()[$key])) {
+        $response->getBody()->write("Your cookie value is: " . $request->getCookieParams()[$key]);
+        return $response;
+    }
+    $response->getBody()->write('Hello World home' . $request->getProtocolVersion());
+    return $response->withHeader(
+        'Set-Cookie',
+        urlencode($key) . '=' . urlencode('test;more'));
+});
+
+$router->get('/sleep5', function (RequestInterface $request, ResponseInterface $response) {
+    sleep(5);
+    $response->getBody()->write('Hello World after 5 seconds');
     return $response;
 });
 

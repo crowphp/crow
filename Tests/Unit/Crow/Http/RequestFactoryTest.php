@@ -3,9 +3,7 @@
 namespace Test\Unit\Crow\Http;
 
 use Crow\Http\RequestFactory;
-use Crow\Http\SwooleRequest;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request as SwooleReq;
 use React\Http\Message\ServerRequest as ReactReq;
@@ -15,8 +13,16 @@ class RequestFactoryTest extends TestCase
 
     public function testShouldReturnRequestInterfaceWhenSwooleRequestGivenToCreate()
     {
+
+        $swoole = new SwooleReq();
+        $swoole->server['request_uri'] = "/api";
+        $swoole->server['request_method'] = "GET";
+        $swoole->server['server_protocol'] = "http/1.1";
+        $swoole->server['server_port'] = "8080";
+        $swoole->header['host'] = "localhost";
+        $swoole->header['foo'] = "bar";
         $request = RequestFactory::create(
-            new SwooleReq()
+            $swoole
         );
 
         $this->assertEquals(true, $request instanceof ServerRequestInterface);
