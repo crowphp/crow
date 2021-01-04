@@ -17,12 +17,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Crow\\": "src/Crow",
-      "Crow\\Router\\": "src/Crow/Router",
-      "Crow\\Http\\": "src/Crow/Http",
-      "Crow\\Http\\Server\\": "src/Crow/Http/Server",
-      "Crow\\Middlewares\\": "src/Crow/Middlewares",
-      "Crow\\Handlers\\": "src/Crow/Handlers"
+      "Crow\\": "Crow"
     }
   },
   "require-dev": {

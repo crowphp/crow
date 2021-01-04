@@ -16,7 +16,7 @@
 >
   <coverage>
     <include>
-      <directory>./src/</directory>
+      <directory>./Crow/</directory>
     </include>
   </coverage>
   <testsuites>
