@@ -21,28 +21,29 @@ class CrowReactServerTest extends TestCase
     function setup(): void
     {
         $this->reactPHPServer = $this->getMockBuilder(ReactPHPServer::class)
-            ->disableOriginalConstructor()->getMock();;
+            ->disableOriginalConstructor()->getMock();
+        $this->loop = $this->getMockForAbstractClass(LoopInterface::class);
 
     }
 
     public function testGetLoop()
     {
-        $this->reactPHPServer->method('getLoop')->willReturn(Factory::create());
+        $this->reactPHPServer->method('getLoop')->willReturn($this->loop);
         $crowReactServer = new CrowReactServer($this->reactPHPServer);
         $this->assertTrue($crowReactServer->getLoop() instanceof LoopInterface);
     }
 
     public function testListen()
     {
-        $this->reactPHPServer->method('getLoop')->willReturn(Factory::create());
+        $this->reactPHPServer->method('getLoop')->willReturn($this->loop);
         $crowReactServer = new CrowReactServer($this->reactPHPServer);
         $this->reactPHPServer->expects($serverSpy = $this->once())
             ->method('getServer')
-            ->willReturn(new Server(Factory::create(), function () {
+            ->willReturn(new Server($this->loop, function () {
             }));
         $this->reactPHPServer->expects($socketSpy = $this->once())
             ->method('getSocket')
-            ->willReturn(new Socket("127.0.0.1:5005",Factory::create()));
+            ->willReturn(new Socket("127.0.0.1:5005", $this->loop));
         $crowReactServer->withTimeout(1);
         $crowReactServer->listen();
         $this->assertEquals(1, $serverSpy->getInvocationCount());
