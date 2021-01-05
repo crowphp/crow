@@ -39,6 +39,7 @@ class SwooleRequest implements ServerRequestInterface
         if ($query !== '') {
             \parse_str($query, $this->queryParams);
         }
+
     }
 
     public function getRequestTarget(): string

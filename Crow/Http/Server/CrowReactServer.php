@@ -31,7 +31,7 @@ final class CrowReactServer extends BaseServer
     {
         if ($this->loopTimeoutSeconds > 0) {
             $loop = $this->reactPHPServer->getLoop();
-            $this->reactPHPServer->getLoop()->addTimer($this->loopTimeoutSeconds, function () use ($loop) {
+            $loop->addTimer($this->loopTimeoutSeconds, function () use ($loop) {
                 echo "Loop timeout enabled, stopping server" . PHP_EOL;
                 $loop->stop();
             });
