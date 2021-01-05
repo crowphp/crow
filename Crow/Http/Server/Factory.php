@@ -13,11 +13,10 @@ class Factory
     {
         switch ($serverType) {
             case self::REACT_SERVER;
-                return new ReactServer;
+                return new CrowReactServer(new ReactPHPServer());
             case self::SWOOLE_SERVER;
-                return new SwooleServer;
+                return new CrowSwooleServer;
         }
-
         throw new InvalidServerType("Invalid server type provided");
     }
 

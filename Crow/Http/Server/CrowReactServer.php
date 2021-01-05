@@ -6,35 +6,32 @@ use React;
 use Psr\Http\Message\ServerRequestInterface;
 use React\EventLoop\LoopInterface;
 
-final class ReactServer extends BaseServer
+final class CrowReactServer extends BaseServer
 {
-
-
-    private LoopInterface $loop;
 
     /**
      * Encapsulating function that initialize and starts all the required
      * services before listening on the given port for HTTP calls.
-     * @param int $port
-     * @param string $host
+     * @param ReactPHPServer $reactPHPServer
      */
+    public function __construct(private ReactPHPServer $reactPHPServer)
+    {
+    }
 
     public function listen(int $port = 5000, string $host = "127.0.0.1")
     {
-        $this->loop = React\EventLoop\Factory::create();
         $this->server = $this->makeServer();
-        $socket = $this->reserveSocket($port);
         $this->attachListeners();
-        $this->server->listen($socket);
+        $this->server->listen($this->reactPHPServer->getSocket($host . ":" . $port));
         $this->loopTimeout();
-        $this->loop->run();
+        $this->reactPHPServer->getLoop()->run();
     }
 
     private function loopTimeout()
     {
         if ($this->loopTimeoutSeconds > 0) {
-            $loop = $this->loop;
-            $this->loop->addTimer($this->loopTimeoutSeconds, function () use ($loop) {
+            $loop = $this->reactPHPServer->getLoop();
+            $this->reactPHPServer->getLoop()->addTimer($this->loopTimeoutSeconds, function () use ($loop) {
                 echo "Loop timeout enabled, stopping server" . PHP_EOL;
                 $loop->stop();
             });
@@ -44,7 +41,7 @@ final class ReactServer extends BaseServer
     private function makeServer(): React\Http\Server
     {
         $app = $this;
-        return new React\Http\Server($this->loop,
+        return $this->reactPHPServer->getServer(
             function (ServerRequestInterface $request) use ($app) {
                 return $app->makeMiddlewareHandlerForRequest()->handle($request);
             }
@@ -52,21 +49,11 @@ final class ReactServer extends BaseServer
     }
 
     /**
-     * Private function to create TCP socket on the given port
-     * @param int $port
-     * @return React\Socket\Server
-     */
-    private function reserveSocket(int $port): React\Socket\Server
-    {
-        return new React\Socket\Server($port, $this->loop);
-    }
-
-    /**
      * @return LoopInterface
      */
     public function getLoop(): LoopInterface
     {
-        return $this->loop;
+        return $this->reactPHPServer->getLoop();
     }
 
 

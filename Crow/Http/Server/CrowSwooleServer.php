@@ -9,7 +9,7 @@ use Crow\Http\RequestFactory;
 use Crow\Http\PsrToSwooleResponseBuilder;
 
 
-final class SwooleServer extends BaseServer
+final class CrowSwooleServer extends BaseServer
 {
 
     public function listen(int $port = 5000, string $host = "127.0.0.1")
