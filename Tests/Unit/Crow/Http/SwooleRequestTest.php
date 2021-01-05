@@ -3,10 +3,13 @@
 namespace Test\Unit\Crow\Http;
 
 use Crow\Http\SwooleRequest;
+use Exception;
 use Laminas\Diactoros\Stream;
 use Nyholm\Psr7\Factory\Psr17Factory;
+use PhpParser\Node\Expr\Error;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriFactoryInterface;
 use Swoole\Http\Request as SwooleRawReq;
@@ -14,7 +17,7 @@ use Swoole\Http\Request as SwooleRawReq;
 class SwooleRequestTest extends TestCase
 {
 
-    private function makeRequest(): RequestInterface
+    private function makeRequest(): ServerRequestInterface
     {
         $swoole = new SwooleRawReq();
         $swoole->server['query_string'] = "foo=bar";
@@ -212,5 +215,90 @@ class SwooleRequestTest extends TestCase
         $this->assertEquals(
             $this->makeUriFactory()->createUri("localhost/uri?foo=bar"),
             $this->makeRequest()->getUri());
+    }
+
+    public function testGetServerParams()
+    {
+        $this->assertIsArray(
+            $this->makeRequest()->getServerParams());
+    }
+
+    public function testGetCookieParams()
+    {
+        $this->assertIsArray(
+            $this->makeRequest()->getCookieParams());
+    }
+
+    public function testWithCookieParams()
+    {
+        $this->assertTrue(
+            $this->makeRequest()->withCookieParams(["hi" => "cookie"]) instanceof ServerRequestInterface);
+    }
+
+    public function testGetQueryParams()
+    {
+        $this->assertIsArray(
+            $this->makeRequest()->getQueryParams());
+    }
+
+    public function testWithQueryParams()
+    {
+        $this->assertTrue(
+            $this->makeRequest()->withQueryParams(['hi' => "param"]) instanceof ServerRequestInterface);
+    }
+
+    public function testWithUploadedFiles()
+    {
+        $this->assertTrue(
+            $this->makeRequest()->withUploadedFiles(['hi' => "param"]) instanceof ServerRequestInterface);
+    }
+
+    public function testGetUploadedFiles()
+    {
+        $this->assertIsArray(
+            $this->makeRequest()->getUploadedFiles());
+    }
+
+
+    public function testGetParsedBody()
+    {
+        $this->expectException(\Error::class);
+        $this->makeRequest()->getParsedBody();
+    }
+
+    public function testWithParsedBody()
+    {
+
+        $body = $this->makeRequest()->withParsedBody(["hello" => "test"])
+            ->getParsedBody();
+
+        $this->assertEquals(["hello" => "test"], $body);
+    }
+
+    public function testGetAttributes()
+    {
+        $this->expectException(\Error::class);
+        $this->makeRequest()->getAttributes();
+    }
+
+    public function testWithAttributes()
+    {
+        $attributes = $this->makeRequest()->withAttribute("hi", "name")
+            ->getAttributes();
+        $this->assertIsArray($attributes);
+    }
+
+    public function testGetAttribute()
+    {
+        $attributes = $this->makeRequest()->withAttribute("hi", "name")
+            ->getAttribute("hi");
+        $this->assertEquals("name", $attributes);
+    }
+
+    public function testWithOutAttribute()
+    {
+        $attributes = $this->makeRequest()->withAttribute("hi", "name")
+            ->withoutAttribute("hi")->getAttribute("hi");
+        $this->assertEquals(null, $attributes);
     }
 }

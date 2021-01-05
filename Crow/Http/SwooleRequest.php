@@ -286,7 +286,7 @@ class SwooleRequest implements ServerRequestInterface
         return $new;
     }
 
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
