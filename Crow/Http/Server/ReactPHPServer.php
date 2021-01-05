@@ -2,19 +2,18 @@
 
 namespace Crow\Http\Server;
 
-use React\EventLoop\LoopInterface;
 use React;
 
 class ReactPHPServer
 {
-    private LoopInterface $loop;
+    private React\EventLoop\LoopInterface $loop;
 
     public function __construct()
     {
         $this->loop = React\EventLoop\Factory::create();
     }
 
-    public function getLoop(): LoopInterface
+    public function getLoop(): React\EventLoop\LoopInterface
     {
         return $this->loop;
     }

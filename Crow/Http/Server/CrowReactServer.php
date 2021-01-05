@@ -56,5 +56,4 @@ final class CrowReactServer extends BaseServer
         return $this->reactPHPServer->getLoop();
     }
 
-
 }
