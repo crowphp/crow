@@ -3,7 +3,6 @@
 namespace Crow\Http\Server;
 
 use Swoole\Http\Request;
-use Swoole\Http\Server;
 use Swoole\Http\Response;
 use Crow\Http\RequestFactory;
 use Crow\Http\PsrToSwooleResponseBuilder;
@@ -12,9 +11,13 @@ use Crow\Http\PsrToSwooleResponseBuilder;
 final class CrowSwooleServer extends BaseServer
 {
 
+    public function __construct(private SwoolePHPServer $serverPHPServer)
+    {
+    }
+
     public function listen(int $port = 5000, string $host = "127.0.0.1")
     {
-        $this->server = new Server($host, $port);
+        $this->server = $this->serverPHPServer->getServer($port, $host);
         $app = $this;
         $this->attachListeners();
         $this->server->on('request', function (Request $request, Response $response) use ($app) {
@@ -25,7 +28,6 @@ final class CrowSwooleServer extends BaseServer
                 ),
                 $response
             )->end();
-            
         });
         $this->loopTimeout();
         $this->server->start();

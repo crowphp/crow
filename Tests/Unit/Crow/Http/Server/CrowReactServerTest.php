@@ -4,13 +4,12 @@ namespace Tests\Unit\Crow\Http\Server;
 
 use Crow\Http\Server\CrowReactServer;
 use Crow\Http\Server\ReactPHPServer;
+use React\Http\Server;
+use React\Socket\Server as Socket;
+use React\EventLoop\LoopInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
-use React\EventLoop\Factory;
-use React\EventLoop\LoopInterface;
-use React\Http\Server;
-use React\Socket\Server as Socket;
 
 class CrowReactServerTest extends TestCase
 {
@@ -23,7 +22,6 @@ class CrowReactServerTest extends TestCase
         $this->reactPHPServer = $this->getMockBuilder(ReactPHPServer::class)
             ->disableOriginalConstructor()->getMock();
         $this->loop = $this->getMockForAbstractClass(LoopInterface::class);
-
     }
 
     public function testGetLoop()

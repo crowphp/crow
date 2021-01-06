@@ -15,7 +15,7 @@ class Factory
             case self::REACT_SERVER;
                 return new CrowReactServer(new ReactPHPServer());
             case self::SWOOLE_SERVER;
-                return new CrowSwooleServer;
+                return new CrowSwooleServer(new SwoolePHPServer());
         }
         throw new InvalidServerType("Invalid server type provided");
     }
