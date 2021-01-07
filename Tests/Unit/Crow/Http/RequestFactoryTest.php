@@ -21,16 +21,16 @@ class RequestFactoryTest extends TestCase
         $swoole->server['server_port'] = "8080";
         $swoole->header['host'] = "localhost";
         $swoole->header['foo'] = "bar";
-        $request = RequestFactory::create(
-            $swoole
-        );
+        $requestFactory = new RequestFactory();
+        $request = $requestFactory->create($swoole);
 
         $this->assertEquals(true, $request instanceof ServerRequestInterface);
     }
 
     public function testShouldReturnRequestInterfaceWhenReactRequestGivenToCreate()
     {
-        $request = RequestFactory::create(
+        $factory = new RequestFactory();
+        $request = $factory->create(
             new ReactReq(
                 'GET',
                 'https://localhost'

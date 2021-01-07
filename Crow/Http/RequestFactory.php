@@ -10,7 +10,7 @@ use React\Http\Message\ServerRequest as ReactRequest;
 class RequestFactory
 {
 
-    public static function create(SwooleRawReq|ReactRequest $request): ServerRequestInterface
+    public function create(SwooleRawReq|ReactRequest $request): ServerRequestInterface
     {
         switch ($request::class) {
             case SwooleRawReq::class:

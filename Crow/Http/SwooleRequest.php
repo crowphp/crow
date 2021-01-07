@@ -12,6 +12,9 @@ use Swoole\Http\Request;
 
 class SwooleRequest implements ServerRequestInterface
 {
+    private Request $swooleRequest;
+    private UriFactoryInterface $uriFactory;
+    private StreamFactoryInterface $streamFactory;
     private UriInterface $uri;
     private StreamInterface $body;
     private string $requestTarget;
@@ -25,12 +28,14 @@ class SwooleRequest implements ServerRequestInterface
     private string $protocol;
 
     public function __construct(
-        private Request $swooleRequest,
-        private UriFactoryInterface $uriFactory,
-        private StreamFactoryInterface $streamFactory
+        Request $swooleRequest,
+        UriFactoryInterface $uriFactory,
+        StreamFactoryInterface $streamFactory
     )
     {
-
+        $this->swooleRequest = $swooleRequest;
+        $this->uriFactory = $uriFactory;
+        $this->streamFactory = $streamFactory;
         $this->serverParams = $this->swooleRequest->server ?? [];
         $this->fileParams = $this->swooleRequest->files ?? [];
         $this->cookies = $this->swooleRequest->cookie ?? [];
@@ -39,8 +44,8 @@ class SwooleRequest implements ServerRequestInterface
         if ($query !== '') {
             \parse_str($query, $this->queryParams);
         }
-
     }
+
 
     public function getRequestTarget(): string
     {

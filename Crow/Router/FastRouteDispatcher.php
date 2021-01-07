@@ -9,11 +9,6 @@ use function FastRoute\simpleDispatcher;
 class FastRouteDispatcher implements DispatcherFactoryInterface
 {
 
-    private array $routeMapSchema = [
-        FastRouter::HTTP_METHOD_LABEL => "",
-        FastRouter::ROUTE_LABEL => "",
-        FastRouter::HANDLER_LABEL => ""
-    ];
 
     /**
      * @param array $routeMap
