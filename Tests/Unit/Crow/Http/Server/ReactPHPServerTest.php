@@ -29,11 +29,11 @@ class ReactPHPServerTest extends TestCase
 
     public function testGetSocket()
     {
-        $socket = $this->reactPHPserver->getSocket('127.0.0.1:5005');
+        $socket = $this->reactPHPserver->getSocket('127.0.0.1:5002');
+        $socket->close();
         $this->assertTrue(
             $socket instanceof React\Socket\Server
         );
-        $socket->close();
     }
 
     public function testGetLoop()

@@ -11,7 +11,9 @@ class SwoolePHPServerTest extends TestCase
 
     public function testGetServer()
     {
-        $server = new SwoolePHPServer();
-        $this->assertTrue($server->getServer(5005, "127.0.0.1") instanceof Server);
+        $swoolePHPServer = new SwoolePHPServer();
+        $server = $swoolePHPServer->getServer(5002, "127.0.0.1");
+        $this->assertTrue($server instanceof Server);
+
     }
 }
