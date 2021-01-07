@@ -3,20 +3,12 @@ name: CI
 on: [ push ]
 
 jobs:
-  build-test:
+  build:
     runs-on: ubuntu-latest
+    container: docker.io/crowphp/phpunit:1.0
     steps:
       - uses: actions/checkout@v2
-      - uses: php-actions/composer@v5
-        with:
-          php_version: 8.0
-      - name: PHPUnit Tests
-        uses: php-actions/phpunit@v2
-        env:
-          XDEBUG_MODE: coverage
-        with:
-          php_extensions: swoole xdebug
-          php_version: 8.0
-          bootstrap: vendor/autoload.php
-          configuration: phpunit.xml
-          args: --coverage-text --whitelist ./src/
+      - name: Install composer dependencies
+        run: composer install --prefer-dist
+      - name: Run PHPUnit
+        run: php vendor/bin/phpunit
