@@ -9,6 +9,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install composer dependencies
-        run: composer install --prefer-dist
+        run: composer install --dev
       - name: Run PHPUnit
         run: php vendor/bin/phpunit
