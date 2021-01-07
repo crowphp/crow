@@ -3,7 +3,7 @@ name: CI
 on: [ push ]
 
 jobs:
-  build:
+  build-test:
     runs-on: ubuntu-latest
     container: docker.io/crowphp/phpunit:1.1
     steps:
@@ -11,4 +11,4 @@ jobs:
       - name: Install composer dependencies
         run: composer install --dev
       - name: Run PHPUnit
-        run: php vendor/bin/phpunit
+        run: php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text --whitelist ./Crow
