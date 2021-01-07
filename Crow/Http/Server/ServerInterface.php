@@ -2,6 +2,7 @@
 
 namespace Crow\Http\Server;
 
+use Crow\Handlers\QueueRequestHandler;
 use Crow\Router\RouterInterface;
 
 
@@ -14,7 +15,7 @@ interface ServerInterface
      * @param string $host
      */
 
-    public function listen(int $port = 5000, string $host="127.0.0.1");
+    public function listen(int $port = 5000, string $host = "127.0.0.1");
 
     /**
      * Function to set timeout after which the server loop stops
@@ -44,4 +45,5 @@ interface ServerInterface
      * @param callable $middleware
      */
     public function use(callable $middleware);
+
 }

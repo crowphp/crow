@@ -2,46 +2,28 @@
 
 namespace Crow\Http\Server;
 
-use Swoole\Http\Request;
-use Swoole\Http\Response;
-use Crow\Http\RequestFactory;
-use Crow\Http\PsrToSwooleResponseBuilder;
 
+use Crow\Handlers\SwooleRequestHandler;
+use Crow\Middlewares\UserMiddlewaresList;
 
 final class CrowSwooleServer extends BaseServer
 {
 
-    public function __construct(private SwoolePHPServer $serverPHPServer)
+    function __construct(private SwoolePHPServer $serverPHPServer,
+                         private SwooleRequestHandler $requestHandler,
+                         UserMiddlewaresList $middlewaresList
+    )
     {
+        parent::__construct($middlewaresList);
     }
 
     public function listen(int $port = 5000, string $host = "127.0.0.1")
     {
+        $this->requestHandler->setRouter($this->router);
+        $this->requestHandler->setMiddlewaresList($this->middlewaresList);
         $this->server = $this->serverPHPServer->getServer($port, $host);
-        $app = $this;
         $this->attachListeners();
-        $this->server->on('request', function (Request $request, Response $response) use ($app) {
-            $responseMerger = new PsrToSwooleResponseBuilder();
-            $responseMerger->toSwoole(
-                $app->makeMiddlewareHandlerForRequest()->handle(
-                    RequestFactory::create($request)
-                ),
-                $response
-            )->end();
-        });
-        $this->loopTimeout();
+        $this->server->on('request', $this->requestHandler);
         $this->server->start();
-
-    }
-
-    private function loopTimeout()
-    {
-        if ($this->loopTimeoutSeconds > 0) {
-            $app = $this;
-            $this->server->tick($this->loopTimeoutSeconds * 1000, function () use ($app) {
-                echo "Loop timeout enabled, stopping server" . PHP_EOL;
-                $app->server->stop();
-            });
-        }
     }
 }

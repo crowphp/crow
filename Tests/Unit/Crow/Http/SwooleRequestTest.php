@@ -3,12 +3,9 @@
 namespace Test\Unit\Crow\Http;
 
 use Crow\Http\SwooleRequest;
-use Exception;
 use Laminas\Diactoros\Stream;
 use Nyholm\Psr7\Factory\Psr17Factory;
-use PhpParser\Node\Expr\Error;
 use PHPUnit\Framework\TestCase;
-use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriFactoryInterface;
@@ -27,11 +24,10 @@ class SwooleRequestTest extends TestCase
         $swoole->server['server_port'] = "8080";
         $swoole->header['host'] = "localhost";
         $swoole->header['foo'] = "bar";
-        return new SwooleRequest(
-            $swoole,
+        return new SwooleRequest($swoole,
             new Psr17Factory(),
-            new Psr17Factory()
-        );
+            new Psr17Factory());
+
     }
 
     private function makeUriFactory(): UriFactoryInterface
@@ -41,7 +37,6 @@ class SwooleRequestTest extends TestCase
 
     public function testGetRequestTarget()
     {
-
         $this->assertEquals(
             "/uri?foo=bar",
             $this->makeRequest()->getRequestTarget()

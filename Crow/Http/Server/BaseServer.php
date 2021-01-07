@@ -2,10 +2,8 @@
 
 namespace Crow\Http\Server;
 
-use Crow\Handlers\QueueRequestHandler;
 use Crow\Http\Server\Exceptions\InvalidEventType;
-use Crow\Middlewares\ErrorMiddleware;
-use Crow\Middlewares\RoutingMiddleware;
+use Crow\Middlewares\UserMiddlewaresList;
 use Crow\Router\RouterInterface;
 use Psr\Http\Server\MiddlewareInterface;
 
@@ -13,28 +11,21 @@ abstract class BaseServer implements ServerInterface
 {
 
     protected RouterInterface $router;
-    protected mixed $server;
+    public mixed $server;
     protected array $eventListeners = [];
     protected int $loopTimeoutSeconds = 0;
     protected array $invalidEvents = ['request'];
-    protected array $middleware = [];
+
+    function __construct(protected UserMiddlewaresList $middlewaresList)
+    {
+
+    }
 
     protected function attachListeners()
     {
         foreach ($this->eventListeners as $eventListener) {
             $this->server->on($eventListener["eventName"], $eventListener["callback"]);
         }
-    }
-
-    protected function makeMiddlewareHandlerForRequest(): QueueRequestHandler
-    {
-        $requestHandler = new QueueRequestHandler();
-        $requestHandler->add(new ErrorMiddleware());
-        foreach ($this->middleware as $middleware) {
-            $requestHandler->add($middleware);
-        }
-        $requestHandler->add(new RoutingMiddleware($this->router));
-        return $requestHandler;
     }
 
 
@@ -71,7 +62,7 @@ abstract class BaseServer implements ServerInterface
 
     public function use(MiddlewareInterface|callable $middleware)
     {
-        $this->middleware[] = $middleware;
+        $this->middlewaresList->add($middleware);
     }
 
 }
