@@ -27,8 +27,6 @@ $app = CrowServer::create(CrowServer::SWOOLE_SERVER);
 $router = Crow\Router\Factory::make();
 
 $router->get('/', function (RequestInterface $request, ResponseInterface $response) {
-
-
     $response->getBody()->write('Hello World');
     return $response;
 });
