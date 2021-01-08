@@ -2,6 +2,7 @@
 
 namespace Crow\Http;
 
+use Crow\Http\Exceptions\InvalidRequestType;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request as SwooleRawReq;
@@ -10,17 +11,21 @@ use React\Http\Message\ServerRequest as ReactRequest;
 class RequestFactory
 {
 
-    public function create(SwooleRawReq|ReactRequest $request): ServerRequestInterface
+    public function create(SwooleRawReq|ReactRequest|ServerRequestInterface $request): ServerRequestInterface
     {
+        $serverRequest = null;
         switch ($request::class) {
             case SwooleRawReq::class:
-                return new SwooleRequest(
+                $serverRequest = new SwooleRequest(
                     $request,
                     new Psr17Factory(),
                     new Psr17Factory()
                 );
+                break;
             case ReactRequest::class:
-                return $request;
+                $serverRequest = $request;
+                break;
         }
+        return $serverRequest;
     }
 }

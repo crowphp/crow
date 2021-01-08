@@ -477,3 +477,6 @@ composer.lock
 *.scss.map
 
 .phpunit.result.cache
+
+##PHPunit coverage
+coverage

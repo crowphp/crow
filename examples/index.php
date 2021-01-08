@@ -9,7 +9,7 @@ use Crow\Router\RouterInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 
-$app = CrowServer::create(CrowServer::SWOOLE_SERVER);
+$app = CrowServer::create(CrowServer::REACT_SERVER);
 $router = Crow\Router\Factory::make();
 
 $router->get('/', function (RequestInterface $request, ResponseInterface $response) {

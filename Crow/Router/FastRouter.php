@@ -12,14 +12,16 @@ use Crow\Router\Exceptions\RoutingLogicException;
 
 class FastRouter implements RouterInterface
 {
+    private DispatcherFactoryInterface $dispatcherFactory;
     protected string $currentGroupPrefix = "";
     public const HTTP_METHOD_LABEL = "HTTP_METHOD";
     public const ROUTE_LABEL = "ROUTE";
     public const HANDLER_LABEL = "HANDLER";
     private array $routeMap = [];
 
-    public function __construct(private DispatcherFactoryInterface $dispatcherFactory)
+    public function __construct(DispatcherFactoryInterface $dispatcherFactory)
     {
+        $this->dispatcherFactory = $dispatcherFactory;
     }
 
     /**

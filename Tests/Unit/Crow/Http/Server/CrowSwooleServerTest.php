@@ -4,6 +4,7 @@ namespace Tests\Unit\Crow\Http\Server;
 
 use Crow\Handlers\SwooleRequestHandler;
 use Crow\Http\Server\CrowSwooleServer;
+use Crow\Http\Server\Exceptions\InvalidEventType;
 use Crow\Http\Server\SwoolePHPServer;
 use Crow\Middlewares\UserMiddlewaresList;
 use Crow\Router\RouterInterface;
@@ -38,7 +39,12 @@ class CrowSwooleServerTest extends TestCase
             $this->swooleRequestHandler,
             new UserMiddlewaresList());
         $crowSwooleServer->withRouter($this->router);
-        $this->swooleServer->expects($requestSpy = $this->once())
+        $crowSwooleServer->on('error', function () {
+        });
+
+        $crowSwooleServer->use(function () {
+        });
+        $this->swooleServer->expects($requestSpy = $this->atLeastOnce())
             ->method('on');
         $this->swoolePHPServer->expects($serverSpy = $this->once())
             ->method('getServer')
@@ -46,5 +52,16 @@ class CrowSwooleServerTest extends TestCase
         $crowSwooleServer->withTimeout(1);
         $crowSwooleServer->listen();
         $this->assertEquals(1, $serverSpy->getInvocationCount());
+    }
+
+    public function testInvalidEventType()
+    {
+        $crowSwooleServer = new CrowSwooleServer(
+            $this->swoolePHPServer,
+            $this->swooleRequestHandler,
+            new UserMiddlewaresList());
+        $this->expectException(InvalidEventType::class);
+        $crowSwooleServer->on('request', function () {
+        });
     }
 }

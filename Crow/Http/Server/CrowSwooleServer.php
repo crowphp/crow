@@ -9,11 +9,16 @@ use Crow\Middlewares\UserMiddlewaresList;
 final class CrowSwooleServer extends BaseServer
 {
 
-    function __construct(private SwoolePHPServer $serverPHPServer,
-                         private SwooleRequestHandler $requestHandler,
+    private SwoolePHPServer $swoolePHPServer;
+    private SwooleRequestHandler $requestHandler;
+
+    function __construct(SwoolePHPServer $swoolePHPServer,
+                         SwooleRequestHandler $requestHandler,
                          UserMiddlewaresList $middlewaresList
     )
     {
+        $this->swoolePHPServer = $swoolePHPServer;
+        $this->requestHandler = $requestHandler;
         parent::__construct($middlewaresList);
     }
 
@@ -21,7 +26,7 @@ final class CrowSwooleServer extends BaseServer
     {
         $this->requestHandler->setRouter($this->router);
         $this->requestHandler->setMiddlewaresList($this->middlewaresList);
-        $this->server = $this->serverPHPServer->getServer($port, $host);
+        $this->server = $this->swoolePHPServer->getServer($port, $host);
         $this->attachListeners();
         $this->server->on('request', $this->requestHandler);
         $this->server->start();

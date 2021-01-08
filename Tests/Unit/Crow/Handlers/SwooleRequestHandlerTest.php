@@ -2,7 +2,7 @@
 
 namespace Tests\Unit\Crow\Handlers;
 
-use Crow\Handlers\QueueRequestHandler;
+use Crow\Handlers\QueueRequestHandlerBuilder;
 use Crow\Handlers\SwooleRequestHandler;
 use Crow\Http\PsrToSwooleResponseBuilder;
 use Crow\Http\RequestFactory;
@@ -21,11 +21,11 @@ class SwooleRequestHandlerTest extends TestCase
     private MockObject $request;
     private MockObject $response;
     private MockObject $psrToSwooleResponseBuilder;
-    private MockObject $requestFactory;
+    private MockObject $swooleRequest;
 
     function setup(): void
     {
-        $this->queueRequestHandler = $this->getMockBuilder(QueueRequestHandler::class)
+        $this->queueRequestHandler = $this->getMockBuilder(QueueRequestHandlerBuilder::class)
             ->disableOriginalConstructor()->getMock();
         $this->router = $this->getMockForAbstractClass(RouterInterface::class);
 
@@ -38,7 +38,7 @@ class SwooleRequestHandlerTest extends TestCase
         $this->psrToSwooleResponseBuilder = $this->getMockBuilder(PsrToSwooleResponseBuilder::class)
             ->disableOriginalConstructor()->getMock();
 
-        $this->requestFactory = $this->getMockBuilder(RequestFactory::class)
+        $this->swooleRequest = $this->getMockBuilder(RequestFactory::class)
             ->disableOriginalConstructor()->getMock();
 
     }
@@ -48,17 +48,18 @@ class SwooleRequestHandlerTest extends TestCase
     {
         $this->psrToSwooleResponseBuilder->expects($toSwooleSpy = $this->once())
             ->method('toSwoole');
-        $this->requestFactory->expects($toRequestSpy = $this->once())
+        $this->swooleRequest->expects($toRequestSpy = $this->once())
             ->method('create');
         $swooleRequestHandler = new SwooleRequestHandler(
             $this->queueRequestHandler,
             $this->psrToSwooleResponseBuilder,
-            $this->requestFactory
+            $this->swooleRequest
         );
         $userMiddlewares = new UserMiddlewaresList();
         $userMiddlewares->add(function () {
+
         });
-        $swooleRequestHandler->setMiddlewaresList($userMiddlewares);
+        $swooleRequestHandler->setMiddlewaresList(new UserMiddlewaresList());
         $swooleRequestHandler->setRouter($this->router);
         call_user_func($swooleRequestHandler, $this->request, $this->response);
 
