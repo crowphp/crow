@@ -11,14 +11,15 @@ abstract class BaseServer implements ServerInterface
 {
 
     protected RouterInterface $router;
+    protected UserMiddlewaresList $middlewaresList;
     public mixed $server;
     protected array $eventListeners = [];
     protected int $loopTimeoutSeconds = 0;
     protected array $invalidEvents = ['request'];
 
-    function __construct(protected UserMiddlewaresList $middlewaresList)
+    function __construct( UserMiddlewaresList $middlewaresList)
     {
-
+        $this->middlewaresList = $middlewaresList;
     }
 
     protected function attachListeners()
@@ -28,7 +29,10 @@ abstract class BaseServer implements ServerInterface
         }
     }
 
-
+    /**
+     * @param string $event
+     * @param callable $callback
+     */
     public function on(string $event, callable $callback)
     {
         if (in_array($event, $this->invalidEvents)) {
@@ -60,6 +64,10 @@ abstract class BaseServer implements ServerInterface
         $this->loopTimeoutSeconds = $seconds;
     }
 
+    /**
+     * Use method provides an interface for users to add middlewares
+     * @param MiddlewareInterface|callable $middleware
+     */
     public function use(MiddlewareInterface|callable $middleware)
     {
         $this->middlewaresList->add($middleware);

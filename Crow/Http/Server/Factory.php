@@ -2,14 +2,13 @@
 
 namespace Crow\Http\Server;
 
-use Crow\Handlers\QueueRequestHandler;
+use Crow\Http\RequestFactory;
+use Crow\Handlers\ReactRequestHandler;
 use Crow\Handlers\SwooleRequestHandler;
 use Crow\Http\PsrToSwooleResponseBuilder;
-use Crow\Http\RequestFactory;
-use Crow\Http\Server\Exceptions\InvalidServerType;
-use Crow\Http\SwooleRequest;
 use Crow\Middlewares\UserMiddlewaresList;
-
+use Crow\Handlers\QueueRequestHandlerBuilder;
+use Crow\Http\Server\Exceptions\InvalidServerType;
 
 class Factory
 {
@@ -20,12 +19,19 @@ class Factory
     {
         switch ($serverType) {
             case self::REACT_SERVER;
-                return new CrowReactServer(new ReactPHPServer());
+                return new CrowReactServer(
+                    new ReactPHPServer(),
+                    new ReactRequestHandler(
+                        new QueueRequestHandlerBuilder(),
+                        new RequestFactory()
+                    ),
+                    new UserMiddlewaresList()
+                );
             case self::SWOOLE_SERVER;
                 return new CrowSwooleServer(
                     new SwoolePHPServer(),
                     new SwooleRequestHandler(
-                        new QueueRequestHandler(),
+                        new QueueRequestHandlerBuilder(),
                         new PsrToSwooleResponseBuilder(),
                         new RequestFactory()
                     ),

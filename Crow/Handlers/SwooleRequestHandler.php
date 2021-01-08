@@ -2,57 +2,39 @@
 
 namespace Crow\Handlers;
 
-use Crow\Http\PsrToSwooleResponseBuilder;
-use Crow\Http\RequestFactory;
-use Crow\Middlewares\ErrorMiddleware;
-use Crow\Middlewares\RoutingMiddleware;
-use Crow\Middlewares\UserMiddlewaresList;
-use Crow\Router\RouterInterface;
 use Swoole\Http\Request;
 use Swoole\Http\Response;
+use Crow\Http\RequestFactory;
+use Crow\Http\PsrToSwooleResponseBuilder;
 
-class SwooleRequestHandler implements CrowRequestHandler
+class SwooleRequestHandler extends CrowRequestHandler
 {
-
-    private RouterInterface $router;
-    private UserMiddlewaresList $middlewaresList;
+    private QueueRequestHandlerBuilder $queueRequestHandlerBuilder;
+    private PsrToSwooleResponseBuilder $psrToSwooleResponseBuilder;
+    private RequestFactory $requestFactory;
 
     function __construct(
-        private QueueRequestHandler $queueRequestHandler,
-        private PsrToSwooleResponseBuilder $psrToSwooleResponseBuilder,
-        private RequestFactory $requestFactory
+        QueueRequestHandlerBuilder $queueRequestHandlerBuilder,
+        PsrToSwooleResponseBuilder $psrToSwooleResponseBuilder,
+        RequestFactory $requestFactory
     )
     {
-    }
-
-    public function setRouter(RouterInterface $router)
-    {
-        $this->router = $router;
-    }
-
-    public function setMiddlewaresList(UserMiddlewaresList $middlewaresList)
-    {
-        $this->middlewaresList = $middlewaresList;
+        $this->queueRequestHandlerBuilder = $queueRequestHandlerBuilder;
+        $this->psrToSwooleResponseBuilder = $psrToSwooleResponseBuilder;
+        $this->requestFactory = $requestFactory;
     }
 
     public function __invoke(Request $request, Response $response)
     {
 
         $this->psrToSwooleResponseBuilder->toSwoole(
-            $this->makeMiddlewareHandlerForRequest()->handle(
+            $this->queueRequestHandlerBuilder->build(
+                $this->middlewaresList,
+                $this->router
+            )->handle(
                 $this->requestFactory->create($request)
             ),
             $response
         )->end();
-    }
-
-    private function makeMiddlewareHandlerForRequest(): QueueRequestHandler
-    {
-        $this->queueRequestHandler->add(new ErrorMiddleware());
-        foreach ($this->middlewaresList->getMiddlewares() as $middleware) {
-            $this->queueRequestHandler->add($middleware);
-        }
-        $this->queueRequestHandler->add(new RoutingMiddleware($this->router));
-        return $this->queueRequestHandler;
     }
 }

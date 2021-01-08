@@ -5,9 +5,17 @@ namespace Crow\Handlers;
 use Crow\Middlewares\UserMiddlewaresList;
 use Crow\Router\RouterInterface;
 
-interface CrowRequestHandler
+abstract class CrowRequestHandler
 {
-    public function setRouter(RouterInterface $router);
+    protected RouterInterface $router;
+    protected UserMiddlewaresList $middlewaresList;
+    public function setRouter(RouterInterface $router)
+    {
+        $this->router = $router;
+    }
 
-    public function setMiddlewaresList(UserMiddlewaresList $middlewaresList);
+    public function setMiddlewaresList(UserMiddlewaresList $middlewaresList)
+    {
+        $this->middlewaresList = $middlewaresList;
+    }
 }
