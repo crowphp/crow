@@ -46,7 +46,6 @@ class SwooleRequest implements ServerRequestInterface
         }
     }
 
-
     public function getRequestTarget(): string
     {
         return !empty($this->requestTarget)

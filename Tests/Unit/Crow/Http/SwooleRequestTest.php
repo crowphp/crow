@@ -14,16 +14,17 @@ use Swoole\Http\Request as SwooleRawReq;
 class SwooleRequestTest extends TestCase
 {
 
-    private function makeRequest(): ServerRequestInterface
+    private function makeRequest($protocolVersion = true): ServerRequestInterface
     {
         $swoole = new SwooleRawReq();
         $swoole->server['query_string'] = "foo=bar";
         $swoole->server['request_uri'] = "/uri";
         $swoole->server['request_method'] = "GET";
-        $swoole->server['server_protocol'] = "http/1.1";
+        $swoole->server['server_protocol'] = ($protocolVersion) ? "http/1.1" : null;
         $swoole->server['server_port'] = "8080";
         $swoole->header['host'] = "localhost";
         $swoole->header['foo'] = "bar";
+        $swoole->header['authorization'] = "Basic MTMx";
         return new SwooleRequest($swoole,
             new Psr17Factory(),
             new Psr17Factory());
@@ -52,6 +53,15 @@ class SwooleRequestTest extends TestCase
         );
     }
 
+    public function testGetProtocolVersionDefault()
+    {
+
+        $this->assertEquals(
+            "1.1",
+            $this->makeRequest(false)->getProtocolVersion()
+        );
+    }
+
     public function testHasHeader()
     {
 
@@ -68,6 +78,20 @@ class SwooleRequestTest extends TestCase
             $request->hasHeader("foo2"));
         $this->assertEquals(
             "bar2",
+            $request->getHeaderLine("foo2"));
+    }
+
+    public function testWithAddedHeaderArray()
+    {
+        $request = $this->makeRequest()
+            ->withAddedHeader('foo2', "bar2")
+            ->withAddedHeader('foo2', "bar3")
+            ->withAddedHeader('foo2', "bar4");
+        $this->assertEquals(
+            true,
+            $request->hasHeader("foo2"));
+        $this->assertEquals(
+            "bar2,bar3,bar4",
             $request->getHeaderLine("foo2"));
     }
 
@@ -140,6 +164,13 @@ class SwooleRequestTest extends TestCase
             $this->makeRequest()->getHeader("foo"));
     }
 
+    public function testGetHeaderOfNonExistingValue()
+    {
+        $this->assertEquals(
+            [],
+            $this->makeRequest()->getHeader("fool"));
+    }
+
     public function testWithProtocolVersion()
     {
         $this->assertEquals(
@@ -173,13 +204,14 @@ class SwooleRequestTest extends TestCase
         $uri = $this->makeUriFactory()->createUri("localhost/uri?foo=bar");
         $this->assertEquals(
             $uri,
-            $this->makeRequest()->withUri($uri)->getUri());
+            $this->makeRequest()
+                ->withUri($uri)->getUri());
     }
 
     public function testGetHeaders()
     {
         $this->assertEquals(
-            ["foo" => "bar", "host" => "localhost"],
+            ["foo" => "bar", "host" => "localhost", "authorization" => "Basic MTMx"],
             $this->makeRequest()->getHeaders());
     }
 
@@ -205,10 +237,18 @@ class SwooleRequestTest extends TestCase
             $this->makeRequest()->withMethod("POST")->getMethod());
     }
 
+    public function testWithMethodException()
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->makeRequest()->withMethod("WRONG")->getMethod();
+    }
+
     public function testGetUri()
     {
         $this->assertEquals(
-            $this->makeUriFactory()->createUri("localhost/uri?foo=bar"),
+            $this->makeUriFactory()->createUri("/uri?foo=bar")
+                ->withHost("localhost")
+                ->withUserInfo(base64_decode("MTMx")),
             $this->makeRequest()->getUri());
     }
 
