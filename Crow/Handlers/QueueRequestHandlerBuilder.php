@@ -1,8 +1,6 @@
-<?php
-
+<?php declare(strict_types=1);
 
 namespace Crow\Handlers;
-
 
 use Crow\Middlewares\ErrorMiddleware;
 use Crow\Middlewares\RoutingMiddleware;
