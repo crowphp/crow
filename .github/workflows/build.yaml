@@ -11,4 +11,10 @@ jobs:
       - name: Install composer dependencies
         run: composer install --dev
       - name: Run PHPUnit
-        run: php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text --whitelist ./Crow
+        run: php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text --coverage-clover coverage/clover.xml --configuration=./phpunit.xml
+      - name: Generate test coverage badge
+        run: php vendor/bin/php-coverage-badger ./coverage/clover.xml ./coverage/coverage.svg
+      - uses: actions/upload-artifact@v2
+        with:
+          name: covergeBadge
+          path: ./coverage/coverage.svg
