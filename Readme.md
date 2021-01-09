@@ -2,20 +2,27 @@ Fast, unopinionated, minimalist web framework for PHP.
 
 ![Build Status](https://github.com/crowphp/crow/workflows/build/badge.svg)
 ![License](https://img.shields.io/github/license/crowphp/crow)
+![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcrowphp%2Fbadger%2Fmaster%2Fcoverage%2Fmaster.json)
 
 ### Installation
+
 #### Requirements
+
 1. PHP >8.0
 2. Swoole PHP extension
 
 ```
 $ pecl install swoole
 ```
+
 Run the following command in a new PHP project:
+
 ```
 composer install crowphp/crow
 ```
+
 ### Usage
+
 ```php
 <?php
 require 'vendor/autoload.php';
