@@ -20,8 +20,8 @@ jobs:
         run: php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text --coverage-clover coverage/clover.xml --configuration=./phpunit.xml
       - name: Clone badger repository
         run: |
-          ls -la /
-          cd /home
+          pwd
+          cd ~/
           mkdir ~/.ssh/
           touch ~/.ssh/known_hosts
           chmod -R 0600 ~/.ssh
