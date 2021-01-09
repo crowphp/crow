@@ -4,7 +4,7 @@ on: [ push ]
 
 jobs:
   build-test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     container: docker.io/crowphp/php:8.0-cli-buster
     steps:
       - uses: actions/checkout@v2
@@ -20,7 +20,10 @@ jobs:
         run: php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text --coverage-clover coverage/clover.xml --configuration=./phpunit.xml
       - name: Clone badger repository
         run: |
-          cd ../
+          cd /home
+          mkdir ~/.ssh
+          touch ~/.ssh/known_hosts
+          chmod -R 0600 ~/.ssh
           ssh-keygen -R github.com
           ssh-keyscan -t rsa github.com >> ~/.ssh/known_hosts
           git clone git@github.com:crowphp/badger.git;
