@@ -19,7 +19,7 @@ jobs:
       - name: Run PHPUnit
         run: php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text --coverage-clover coverage/clover.xml --configuration=./phpunit.xml
       - name: Setup Secrets
-        run: mkdir ~/.ssh/ && echo $PRIV_KEY > ~/.ssh/id_badger && echo $PUB_KEY > ~/.ssh/id_badger.pub && eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_badger
+        run: mkdir ~/.ssh/ && echo $PRIV_KEY > ~/.ssh/id_badger && echo $PUB_KEY > ~/.ssh/id_badger.pub && eval "$(ssh-agent -s)" && chmod -R 0600 ~/.ssh/ && ssh-add ~/.ssh/id_badger
         env:
           PRIV_KEY: ${{ secrets.BADGER_PRIVATE_KEY }}
           PUB_KEY: ${{ secrets.BADGER_PUBLIC_KEY }}
