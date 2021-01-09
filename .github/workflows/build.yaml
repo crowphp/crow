@@ -23,7 +23,7 @@ jobs:
         env:
           PRIV_KEY: ${{ secrets.BADGER_PRIVATE_KEY }}
           PUB_KEY: ${{ secrets.BADGER_PUBLIC_KEY }}
-      - name: Clone badger repo
+      - name: Clone badger repository
         run: git clone git@github.com:crowphp/badger.git
       - name: Generate coverage badge
         run: composer install && php index.php $CROWPHP_PATH ${{ steps.extract_branch.outputs.branch }}
