@@ -18,13 +18,21 @@ jobs:
         run: CROWPHP_PATH=$(pwd)
       - name: Run PHPUnit
         run: php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text --coverage-clover coverage/clover.xml --configuration=./phpunit.xml
-      - name: Setup BADGER Secrets
-        run: mkdir ~/.ssh/ && echo $PRIV_KEY > ~/.ssh/id_badger && cat ~/.ssh/id_badger && echo $PUB_KEY > ~/.ssh/id_badger.pub && eval "$(ssh-agent -s)" && chmod -R 0600 ~/.ssh/ && ssh-add ~/.ssh/id_badger
-        env:
-          PRIV_KEY: ${{ secrets.BADGER_PRIVATE_KEY }}
-          PUB_KEY: ${{ secrets.BADGER_PUBLIC_KEY }}
       - name: Clone badger repository
-        run: git clone git@github.com:crowphp/badger.git
+        run: |
+          cd ../
+          git clone git@github.com:crowphp/badger.git;
+      - name: Setup BADGER Secrets
+        run: |
+          mkdir ~/.ssh/
+          eval "$(ssh-agent -s)";
+          bash ./decrypt.sh;
+          mv ./secrets/id_badger ~/.ssh/id_badger;
+          mv ./secrets/id_badger.pub ~/.ssh/id_badger.pub;
+          chmod -R 0600 ~/.ssh/;
+          ssh-add ~/.ssh/id_badger;
+        env:
+          BADGER_ENCRYPTION_KEY: ${{ secrets.BADGER_ENCRYPTION_KEY }}
       - name: Generate coverage badge
         run: composer install && php index.php $CROWPHP_PATH ${{ steps.extract_branch.outputs.branch }}
 
