@@ -10,11 +10,22 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install composer dependencies
         run: composer install --dev
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Extract crowphp absolute path
+        run: CROWPHP_PATH=$(pwd)
       - name: Run PHPUnit
         run: php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text --coverage-clover coverage/clover.xml --configuration=./phpunit.xml
-      - name: Generate test coverage badge
-        run: php vendor/bin/php-coverage-badger ./coverage/clover.xml ./coverage/coverage.svg
-      - uses: actions/upload-artifact@v2
-        with:
-          name: covergeBadge
-          path: ./coverage/coverage.svg
+      - name: Setup Secrets
+        run: echo $PRIV_KEY > ~/.ssh/id_badger && echo $PUB_KEY > ~/.ssh/id_badger.pub && eval "$(ssh-agent -s)" && ssh-add ~/.ssh/id_badger
+        env:
+          PRIV_KEY: ${{ secrets.BADGER_PRIVATE_KEY }}
+          PUB_KEY: ${{ secrets.BADGER_PUBLIC_KEY }}
+      - name: Clone badger repo
+        run: git clone git@github.com:crowphp/badger.git
+      - name: Generate coverage badge
+        run: composer install && php index.php $CROWPHP_PATH ${{ steps.extract_branch.outputs.branch }}
+
+
