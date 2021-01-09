@@ -1,5 +1,16 @@
 {
   "name": "crowphp/crow",
+  "type": "library",
+  "description": "Fast, un-opinionated, minimalist web framework for PHP.",
+  "keywords": [
+    "php",
+    "framework",
+    "http",
+    "crowphp",
+    "server"
+  ],
+  "homepage": "https://crowphp.com",
+  "license": "MIT",
   "authors": [
     {
       "name": "Yousaf Syed",
