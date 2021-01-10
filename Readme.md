@@ -39,5 +39,7 @@ $router->get('/', function (RequestInterface $request, ResponseInterface $respon
     return $response;
 });
 
+$app->withRouter($router);
+
 $app->listen(5005);
 ```
