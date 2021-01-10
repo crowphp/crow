@@ -4,11 +4,26 @@ on: [ push ]
 
 jobs:
   build-test:
-    runs-on: ubuntu-latest
-    container: docker.io/crowphp/php:8.0-cli-buster
+    runs-on: ubuntu-20.04
+    container: docker.io/crowphp/php:8.0-cli-buster-xdebug
     steps:
       - uses: actions/checkout@v2
       - name: Install composer dependencies
         run: composer install --dev
+      - name: Extract branch name
+        shell: bash
+        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/heads/})"
+        id: extract_branch
+      - name: Extract crowphp absolute path
+        run: CROWPHP_PATH=$(pwd)
       - name: Run PHPUnit
-        run: php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text --whitelist ./Crow
+        run: php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text --coverage-clover coverage/clover.xml --configuration=./phpunit.xml
+      - name: Create coverage badge
+        run: |
+          php vendor/bin/badger upload:coverage $BADGER_SERVER $BRANCH_NAME $BADGER_SECRET_KEY
+        env:
+          BADGER_SECRET_KEY: ${{ secrets.BADGER_SECRET_KEY }}
+          BADGER_SERVER: ${{ secrets.BADGER_SERVER }}
+          BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
+
+

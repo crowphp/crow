@@ -18,6 +18,9 @@
     <include>
       <directory>./Crow/</directory>
     </include>
+    <report>
+      <clover outputFile="coverage/clover.xml" />
+    </report>
   </coverage>
   <testsuites>
     <testsuite name="CrowPHP Tests">

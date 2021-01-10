@@ -9,7 +9,7 @@ use Crow\Router\RouterInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
 
-$app = CrowServer::create(CrowServer::REACT_SERVER);
+$app = CrowServer::create(CrowServer::SWOOLE_SERVER);
 $router = Crow\Router\Factory::make();
 
 $router->get('/', function (RequestInterface $request, ResponseInterface $response) {
@@ -77,4 +77,4 @@ $app->on('start', function ($server) {
     echo "CrowPHP server is listening on port $server->host:$server->port " . PHP_EOL;
 });
 
-$app->listen(5005, "0.0.0.0");
+$app->listen(80, "0.0.0.0");
