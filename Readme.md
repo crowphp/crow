@@ -2,7 +2,7 @@ Fast, unopinionated, minimalist web framework for PHP.
 
 ![Build Status](https://github.com/crowphp/crow/workflows/build/badge.svg)
 ![License](https://img.shields.io/github/license/crowphp/crow)
-![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2Fcrowphp%2Fbadger%2Fmaster%2Fcoverage%2Fmaster.json)
+![Coverage](https://img.shields.io/endpoint?url=https://badger.crowphp.com/coverage/master)
 
 ### Installation
 
