@@ -246,7 +246,7 @@ class SwooleRequestTest extends TestCase
     public function testGetUri()
     {
         $this->assertEquals(
-            $this->makeUriFactory()->createUri("/uri?foo=bar")
+            $this->makeUriFactory()->createUri("localhost:8080/uri?foo=bar")
                 ->withHost("localhost")
                 ->withUserInfo(base64_decode("MTMx")),
             $this->makeRequest()->getUri());
