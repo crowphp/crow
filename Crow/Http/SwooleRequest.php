@@ -96,9 +96,10 @@ class SwooleRequest implements ServerRequestInterface
         }
 
         $userInfo = $this->parseUserInfo() ?? null;
-
+        list($host) = explode(":", $this->swooleRequest->header['host']);
+        $port = $this->swooleRequest->server['server_port'];
         $uri = (!empty($userInfo) ? '//' . $userInfo . '@' : '')
-            . $this->swooleRequest->header['host']
+            . "$host:$port"
             . $this->getRequestTarget();
 
         return $this->uri = $this->uriFactory->createUri(
