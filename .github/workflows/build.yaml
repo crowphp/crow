@@ -23,7 +23,7 @@ jobs:
           php vendor/bin/badger upload:coverage $BADGER_SERVER $BRANCH_NAME $BADGER_SECRET_KEY
         env:
           BADGER_SECRET_KEY: ${{ secrets.BADGER_SECRET_KEY }}
-          BADGER_SERVER: ${{ env.BADGER_SERVER }}
+          BADGER_SERVER: ${{ secrets.BADGER_SERVER }}
           BRANCH_NAME: ${{ steps.extract_branch.outputs.branch }}
 
 
