@@ -36,6 +36,6 @@
     "phpunit/phpunit": "^9.5",
     "phpspec/prophecy-phpunit": "^2.0",
     "laminas/laminas-diactoros": "^2.5",
-    "crowphp/badger": "dev-master"
+    "crowphp/badger": "0.2-beta"
   }
 }
