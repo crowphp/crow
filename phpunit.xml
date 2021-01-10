@@ -19,7 +19,7 @@
       <directory>./Crow/</directory>
     </include>
     <report>
-      <clover outputFile="clover.xml" />
+      <clover outputFile="coverage/clover.xml" />
     </report>
   </coverage>
   <testsuites>
