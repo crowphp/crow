@@ -12,6 +12,7 @@ final class CrowSwooleServer extends BaseServer
     private SwoolePHPServer $swoolePHPServer;
     private SwooleRequestHandler $requestHandler;
 
+
     function __construct(SwoolePHPServer $swoolePHPServer,
                          SwooleRequestHandler $requestHandler,
                          UserMiddlewaresList $middlewaresList
@@ -29,6 +30,14 @@ final class CrowSwooleServer extends BaseServer
         $this->server = $this->swoolePHPServer->getServer($port, $host);
         $this->attachListeners();
         $this->server->on('request', $this->requestHandler);
+        $this->setServerSettings();
         $this->server->start();
+    }
+
+    private function setServerSettings()
+    {
+        if (count($this->configs) > 0) {
+            $this->server->set($this->configs);
+        }
     }
 }
