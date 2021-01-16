@@ -77,4 +77,10 @@ $app->on('start', function ($server) {
     echo "CrowPHP server is listening on port $server->host:$server->port " . PHP_EOL;
 });
 
-$app->listen(80, "0.0.0.0");
+$app->configs(['reactor_num' => 2,
+    'worker_num' => 4,
+    'backlog' => 128,
+    'max_request' => 50,
+    'dispatch_mode' => 1,]);
+
+$app->listen(5005, "0.0.0.0");

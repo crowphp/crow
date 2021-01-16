@@ -12,10 +12,11 @@ abstract class BaseServer implements ServerInterface
 
     protected RouterInterface $router;
     protected UserMiddlewaresList $middlewaresList;
-    public mixed $server;
     protected array $eventListeners = [];
     protected int $loopTimeoutSeconds = 0;
     protected array $invalidEvents = ['request'];
+    protected array $configs = [];
+    protected mixed $server;
 
     function __construct( UserMiddlewaresList $middlewaresList)
     {
@@ -71,6 +72,12 @@ abstract class BaseServer implements ServerInterface
     public function use(MiddlewareInterface|callable $middleware)
     {
         $this->middlewaresList->add($middleware);
+    }
+
+
+    public function configs(array $configs)
+    {
+        $this->configs = $configs;
     }
 
 }
