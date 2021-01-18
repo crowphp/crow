@@ -13,7 +13,6 @@ $app = CrowServer::create(CrowServer::SWOOLE_SERVER);
 $router = Crow\Router\Factory::make();
 
 $router->get('/', function (RequestInterface $request, ResponseInterface $response) {
-
     $key = 'crow\php';
     if (isset($request->getCookieParams()[$key])) {
         $response->getBody()->write("Your cookie value is: " . $request->getCookieParams()[$key]);
@@ -40,6 +39,12 @@ $router->post('/file', function (RequestInterface $request, ResponseInterface $r
 $router->get('/id/{id}', function (RequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
     $response->getBody()->write('Hello World' . $id);
     return $response;
+})->middleware(function (RequestInterface $request, RequestHandlerInterface $next) {
+    echo "This is a local middleware 1\n";
+    return $next->handle($request);
+})->middleware(function (RequestInterface $request, RequestHandlerInterface $next) {
+    echo "This is a local middleware 2\n";
+    return $next->handle($request);
 });
 
 $router->addGroup('/yousaf', function (RouterInterface $router) {
@@ -47,17 +52,39 @@ $router->addGroup('/yousaf', function (RouterInterface $router) {
 
         $response->getBody()->write(json_encode(["message" => $id]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
+    })->middleware(function (RequestInterface $request, RequestHandlerInterface $next) {
+        echo "This is a local middleware 1 for sunny\n";
+        return $next->handle($request);
     });
 
     $router->get('/mani/id/{id}', function (RequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
         $response->getBody()->write('Mani ' . $id);
         throw new Exception('Hey i am an exception');
     });
+    $router->addGroup("/ehsan", function (RouterInterface $router) {
+        $router->get('/naqvi/id/{id}', function (RequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
+            $response->getBody()->write('naqvi ' . $id);
+            return $response;
+        });
+    });
+
+}, function (RequestInterface $request, RequestHandlerInterface $next) {
+    echo "This is a group middleware 1\n";
+    return $next->handle($request);
+}, function (RequestInterface $request, RequestHandlerInterface $next) {
+    echo "This is a group middleware 2\n";
+    return $next->handle($request);
+});
+
+$router->get('/mehru', function (RequestInterface $request, ResponseInterface $response): ResponseInterface {
+    $response->getBody()->write('Hello mehru');
+    return $response;
 });
 $app->withRouter($router);
 
-//$app->withTimeout(5);
+$app->withTimeout(5);
 //Uncaught Exceptions
+
 
 $app->use(function (RequestInterface $request, RequestHandlerInterface $next) {
     echo "This is a global middleware 1\n";
