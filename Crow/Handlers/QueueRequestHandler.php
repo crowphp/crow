@@ -12,10 +12,6 @@ class QueueRequestHandler implements RequestHandlerInterface
 
     private array $middleware = [];
 
-    public function __construct()
-    {
-    }
-
     public function add(MiddlewareInterface|callable $middleware)
     {
         $this->middleware[] = $middleware;

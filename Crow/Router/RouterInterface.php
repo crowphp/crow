@@ -9,21 +9,21 @@ use Psr\Http\Message\ServerRequestInterface;
 interface RouterInterface
 {
 
-    public function addRoute(array|string $httpMethod, string $route, mixed $handler);
+    public function addRoute(string $httpMethod, string $route, callable $handler);
 
-    public function addGroup(string $prefix, callable $callback);
+    public function addGroup(string $prefix, callable $callback, mixed ...$handlers);
 
-    public function get(string $route, mixed $handler);
+    public function get(string $route, callable $handler);
 
-    public function post(string $route, mixed $handler);
+    public function post(string $route, callable $handler);
 
-    public function put(string $route, mixed $handler);
+    public function put(string $route, callable $handler);
 
-    public function delete(string $route, mixed $handler);
+    public function delete(string $route, callable $handler);
 
-    public function patch(string $route, mixed $handler);
+    public function patch(string $route, callable $handler);
 
-    public function head(string $route, mixed $handler);
+    public function head(string $route, callable $handler);
 
     public function dispatch(ServerRequestInterface $request): ResponseInterface;
 

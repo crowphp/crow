@@ -2,26 +2,34 @@
 
 namespace Crow\Router;
 
-use FastRoute;
+use Crow\Handlers\RouteDispatchHandler;
 use Crow\Http\DefaultHeaders;
+use FastRoute;
 use Crow\Http\ResponseBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use React\Http\Message\Response;
 use Crow\Router\Exceptions\RoutingLogicException;
+use Psr\Http\Server\MiddlewareInterface;
+use React\Http\Message\Response;
 
 class FastRouter implements RouterInterface
 {
     private DispatcherFactoryInterface $dispatcherFactory;
-    protected string $currentGroupPrefix = "";
+    private RouteDispatchHandler $routeDispatchHandler;
+    private string $currentGroupPrefix = "";
+    private string $currentRouteMethod = "";
+    private string $currentRoutePath = "";
+    private array $currentGroupMiddlewares = [];
     public const HTTP_METHOD_LABEL = "HTTP_METHOD";
     public const ROUTE_LABEL = "ROUTE";
-    public const HANDLER_LABEL = "HANDLER";
+    public const HANDLER_LABEL = "HANDLERS";
+    public const MIDDLEWARES_LABEL = "MIDDLEWARES";
     private array $routeMap = [];
 
-    public function __construct(DispatcherFactoryInterface $dispatcherFactory)
+    public function __construct(DispatcherFactoryInterface $dispatcherFactory, RouteDispatchHandler $routeDispatchHandler)
     {
         $this->dispatcherFactory = $dispatcherFactory;
+        $this->routeDispatchHandler = $routeDispatchHandler;
     }
 
     /**
@@ -31,20 +39,45 @@ class FastRouter implements RouterInterface
      *
      * @param string|string[] $httpMethod
      * @param string $route
-     * @param mixed $handler
+     * @param callable $handler
      */
-    public function addRoute(array|string $httpMethod, string $route, mixed $handler)
+    public function addRoute(string $httpMethod, string $route, callable $handler): RouterInterface
     {
         $route = $this->currentGroupPrefix . $route;
-        foreach ((array)$httpMethod as $method) {
-            array_push($this->routeMap, [
-                self::HTTP_METHOD_LABEL => $method,
-                self::ROUTE_LABEL => $route,
-                self::HANDLER_LABEL => $handler
-            ]);
-        }
+        $this->currentRoutePath = $route;
+        $this->currentRouteMethod = $httpMethod;
+        array_push($this->routeMap, [
+            self::HTTP_METHOD_LABEL => $httpMethod,
+            self::ROUTE_LABEL => $route,
+            self::HANDLER_LABEL => [self::HANDLER_LABEL => $handler, self::MIDDLEWARES_LABEL => $this->currentGroupMiddlewares]
+        ]);
+
+        return $this;
     }
 
+    public function middleware(MiddlewareInterface|callable $handler): RouterInterface
+    {
+        $currentRouteKey =
+            $this->findRouteByMethodAndPath($this->currentRouteMethod, $this->currentRoutePath);
+        if ($currentRouteKey !== null) {
+            array_push(
+                $this->routeMap[$currentRouteKey][self::HANDLER_LABEL][self::MIDDLEWARES_LABEL],
+                $handler
+            );
+        }
+        return $this;
+    }
+
+    private function findRouteByMethodAndPath(string $routeMethod, string $routePath): ?int
+    {
+        foreach ($this->routeMap as $key => $route) {
+            if ($route[self::ROUTE_LABEL] === $routePath &&
+                $route[self::HTTP_METHOD_LABEL] === $routeMethod) {
+                return $key;
+            }
+        }
+        return null;
+    }
 
     /**
      * Create a route group with a common prefix.
@@ -53,13 +86,19 @@ class FastRouter implements RouterInterface
      *
      * @param string $prefix
      * @param callable $callback
+     * @param mixed ...$groupHandlers
      */
-    public function addGroup(string $prefix, callable $callback)
+    public function addGroup(string $prefix, callable $callback, mixed ...$groupHandlers)
     {
         $previousGroupPrefix = $this->currentGroupPrefix;
+        $previousGroupMiddlewares = $this->currentGroupMiddlewares;
         $this->currentGroupPrefix = $previousGroupPrefix . $prefix;
+        if (count($groupHandlers) > 0) {
+            $this->currentGroupMiddlewares = $groupHandlers;
+        }
         $callback($this);
         $this->currentGroupPrefix = $previousGroupPrefix;
+        $this->currentGroupMiddlewares = $previousGroupMiddlewares;
     }
 
     /**
@@ -68,11 +107,12 @@ class FastRouter implements RouterInterface
      * This is simply an alias of $this->addRoute('GET', $route, $handler)
      *
      * @param string $route
-     * @param mixed $handler
+     * @param callable $handler
      */
-    public function get(string $route, mixed $handler)
+    public function get(string $route, callable $handler): RouterInterface
     {
         $this->addRoute('GET', $route, $handler);
+        return $this;
     }
 
     /**
@@ -81,11 +121,13 @@ class FastRouter implements RouterInterface
      * This is simply an alias of $this->addRoute('POST', $route, $handler)
      *
      * @param string $route
-     * @param mixed $handler
+     * @param callable $handler
+     * @return RouterInterface
      */
-    public function post(string $route, mixed $handler)
+    public function post(string $route, callable $handler): RouterInterface
     {
         $this->addRoute('POST', $route, $handler);
+        return $this;
     }
 
     /**
@@ -94,11 +136,13 @@ class FastRouter implements RouterInterface
      * This is simply an alias of $this->addRoute('PUT', $route, $handler)
      *
      * @param string $route
-     * @param mixed $handler
+     * @param callable $handler
+     * @return RouterInterface
      */
-    public function put(string $route, mixed $handler)
+    public function put(string $route, callable $handler): RouterInterface
     {
         $this->addRoute('PUT', $route, $handler);
+        return $this;
     }
 
     /**
@@ -107,11 +151,13 @@ class FastRouter implements RouterInterface
      * This is simply an alias of $this->addRoute('DELETE', $route, $handler)
      *
      * @param string $route
-     * @param mixed $handler
+     * @param callable $handler
+     * @return RouterInterface
      */
-    public function delete(string $route, mixed $handler)
+    public function delete(string $route, callable $handler): RouterInterface
     {
         $this->addRoute('DELETE', $route, $handler);
+        return $this;
     }
 
     /**
@@ -120,11 +166,12 @@ class FastRouter implements RouterInterface
      * This is simply an alias of $this->addRoute('PATCH', $route, $handler)
      *
      * @param string $route
-     * @param mixed $handler
+     * @param callable $handler
      */
-    public function patch(string $route, mixed $handler)
+    public function patch(string $route, callable $handler): RouterInterface
     {
         $this->addRoute('PATCH', $route, $handler);
+        return $this;
     }
 
     /**
@@ -133,11 +180,12 @@ class FastRouter implements RouterInterface
      * This is simply an alias of $this->addRoute('HEAD', $route, $handler)
      *
      * @param string $route
-     * @param mixed $handler
+     * @param callable $handler
      */
-    public function head(string $route, mixed $handler)
+    public function head(string $route, callable $handler): RouterInterface
     {
         $this->addRoute('HEAD', $route, $handler);
+        return $this;
     }
 
     /**
@@ -159,19 +207,15 @@ class FastRouter implements RouterInterface
                     405,
                     "Method not allowed");
             case FastRoute\Dispatcher::FOUND:
-                $handler = $routeInfo[1];
-                $vars = $routeInfo[2];
-                return $handler(
+                array_shift($routeInfo);
+                list($handlers, $vars) = $routeInfo;
+                return call_user_func(
+                    $this->routeDispatchHandler,
+                    $handlers[self::MIDDLEWARES_LABEL],
+                    $handlers[self::HANDLER_LABEL],
                     $request,
-                    new Response(200,
-                        array_merge(
-                            DefaultHeaders::get(),
-                            [
-                                "Host" => $request->getHeader("host")
-                            ]
-                        )
-                    ),
-                    ...array_values($vars));
+                    $vars
+                );
         }
 
         throw new RoutingLogicException('Something went wrong in routing.');
