@@ -76,10 +76,6 @@ $router->addGroup('/yousaf', function (RouterInterface $router) {
     return $next->handle($request);
 });
 
-$router->get('/mehru', function (RequestInterface $request, ResponseInterface $response): ResponseInterface {
-    $response->getBody()->write('Hello mehru');
-    return $response;
-});
 $app->withRouter($router);
 
 $app->withTimeout(5);
