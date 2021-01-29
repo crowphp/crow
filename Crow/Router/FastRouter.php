@@ -57,9 +57,13 @@ class FastRouter implements RouterInterface
 
     public function middleware(MiddlewareInterface|callable $handler): RouterInterface
     {
-
-        if ($currentRouteKey = $this->findRouteByMethodAndPath($this->currentRouteMethod, $this->currentRoutePath)) {
-            array_push($this->routeMap[$currentRouteKey][self::HANDLER_LABEL][self::MIDDLEWARES_LABEL], $handler);
+        $currentRouteKey =
+            $this->findRouteByMethodAndPath($this->currentRouteMethod, $this->currentRoutePath);
+        if ($currentRouteKey !== null) {
+            array_push(
+                $this->routeMap[$currentRouteKey][self::HANDLER_LABEL][self::MIDDLEWARES_LABEL],
+                $handler
+            );
         }
         return $this;
     }
