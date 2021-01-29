@@ -122,6 +122,7 @@ class FastRouter implements RouterInterface
      *
      * @param string $route
      * @param callable $handler
+     * @return RouterInterface
      */
     public function post(string $route, callable $handler): RouterInterface
     {
@@ -136,6 +137,7 @@ class FastRouter implements RouterInterface
      *
      * @param string $route
      * @param callable $handler
+     * @return RouterInterface
      */
     public function put(string $route, callable $handler): RouterInterface
     {
@@ -150,6 +152,7 @@ class FastRouter implements RouterInterface
      *
      * @param string $route
      * @param callable $handler
+     * @return RouterInterface
      */
     public function delete(string $route, callable $handler): RouterInterface
     {

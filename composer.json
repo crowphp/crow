@@ -29,7 +29,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Crow\\": "Crow"
+      "Crow\\": "Crow",
+      "Tests\\" : "Tests"
     }
   },
   "require-dev": {
