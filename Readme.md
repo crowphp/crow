@@ -1,9 +1,10 @@
-Fast, unopinionated, minimalist web framework and server for PHP, built on top of Async PHP servers i.e SwoolePHP and ReactPHP. 
-CrowPHP Let's you build true microservices in PHP without the use of PHP-FPM and Nginx or Apache.
+Fast un-opinionated minimalist web framework and server for PHP built on top of Async PHP servers  (SwoolePHP and ReactPHP).
+CrowPHP lets you build real microservices in PHP without the use of PHP-FPM/Nginx or Apache.
+
 
 ![Build Status](https://github.com/crowphp/crow/workflows/build/badge.svg)
 ![License](https://img.shields.io/github/license/crowphp/crow)
-![Coverage](https://img.shields.io/endpoint?url=https://badger.crowphp.com/coverage/master)
+![Coverage](https://img.shields.io/endpoint?url=https://badger.crowphp.com/coverage/0.x)
 
 ### Installation
 
@@ -54,4 +55,23 @@ For more information on how to configure your web server, see the Documentation.
 
 ## Tests
 To execute the test suite, you'll need to install all development dependencies.
-c
+```
+$ git clone https://github.com/crowphp/crow
+$ composer install
+$ composer test
+```
+## Contributing
+
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
+
+## Learn More
+Learn more at these links:
+- [Website](https://www.crowphp.com)
+
+## Security
+If you discover security related issues, please email yousaf@bmail.pk or use the issue tracker.
+
+## License
+
+The Crow Framework is licensed under the MIT license. See [License File](LICENSE.md) for more information.
+
