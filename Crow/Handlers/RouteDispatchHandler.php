@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Handlers;
 
@@ -15,11 +17,19 @@ class RouteDispatchHandler
         $this->requestHandler = $requestHandler;
     }
 
-    public function __invoke(array $middlewares,
-                             callable $handler,
-                             ServerRequestInterface $request,
-                             array $args): ResponseInterface
-    {
+    /**
+     * @param mixed[] $middlewares
+     * @param callable $handler
+     * @param ServerRequestInterface $request
+     * @param mixed[] $args
+     * @return ResponseInterface
+     */
+    public function __invoke(
+        array $middlewares,
+        callable $handler,
+        ServerRequestInterface $request,
+        array $args
+    ): ResponseInterface {
         if (count($middlewares) > 0) {
             foreach ($middlewares as $middleware) {
                 $this->requestHandler->add($middleware);

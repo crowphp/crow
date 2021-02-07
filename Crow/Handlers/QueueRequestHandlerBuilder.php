@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Handlers;
 
@@ -10,7 +12,7 @@ use Crow\Router\RouterInterface;
 class QueueRequestHandlerBuilder
 {
 
-    function build(UserMiddlewaresList $middlewaresList, RouterInterface $router): QueueRequestHandler
+    public function build(UserMiddlewaresList $middlewaresList, RouterInterface $router): QueueRequestHandler
     {
         $queueRequestHandler = new QueueRequestHandler();
         $queueRequestHandler->add(new ErrorMiddleware());

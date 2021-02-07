@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Router;
 
@@ -19,15 +21,23 @@ class FastRouter implements RouterInterface
     private string $currentGroupPrefix = "";
     private string $currentRouteMethod = "";
     private string $currentRoutePath = "";
+    /**
+     * @var array<callable>
+     */
     private array $currentGroupMiddlewares = [];
     public const HTTP_METHOD_LABEL = "HTTP_METHOD";
     public const ROUTE_LABEL = "ROUTE";
     public const HANDLER_LABEL = "HANDLERS";
     public const MIDDLEWARES_LABEL = "MIDDLEWARES";
+    /**
+     * @var array<array>
+     */
     private array $routeMap = [];
 
-    public function __construct(DispatcherFactoryInterface $dispatcherFactory, RouteDispatchHandler $routeDispatchHandler)
-    {
+    public function __construct(
+        DispatcherFactoryInterface $dispatcherFactory,
+        RouteDispatchHandler $routeDispatchHandler
+    ) {
         $this->dispatcherFactory = $dispatcherFactory;
         $this->routeDispatchHandler = $routeDispatchHandler;
     }
@@ -37,9 +47,10 @@ class FastRouter implements RouterInterface
      *
      * The syntax used in the $route string depends on the used route parser.
      *
-     * @param string|string[] $httpMethod
+     * @param string $httpMethod
      * @param string $route
      * @param callable $handler
+     * @return RouterInterface
      */
     public function addRoute(string $httpMethod, string $route, callable $handler): RouterInterface
     {
@@ -49,13 +60,16 @@ class FastRouter implements RouterInterface
         array_push($this->routeMap, [
             self::HTTP_METHOD_LABEL => $httpMethod,
             self::ROUTE_LABEL => $route,
-            self::HANDLER_LABEL => [self::HANDLER_LABEL => $handler, self::MIDDLEWARES_LABEL => $this->currentGroupMiddlewares]
+            self::HANDLER_LABEL => [
+                self::HANDLER_LABEL => $handler,
+                self::MIDDLEWARES_LABEL => $this->currentGroupMiddlewares
+            ]
         ]);
 
         return $this;
     }
 
-    public function middleware(MiddlewareInterface|callable $handler): RouterInterface
+    public function middleware(MiddlewareInterface | callable $handler): RouterInterface
     {
         $currentRouteKey =
             $this->findRouteByMethodAndPath($this->currentRouteMethod, $this->currentRoutePath);
@@ -71,8 +85,10 @@ class FastRouter implements RouterInterface
     private function findRouteByMethodAndPath(string $routeMethod, string $routePath): ?int
     {
         foreach ($this->routeMap as $key => $route) {
-            if ($route[self::ROUTE_LABEL] === $routePath &&
-                $route[self::HTTP_METHOD_LABEL] === $routeMethod) {
+            if (
+                $route[self::ROUTE_LABEL] === $routePath &&
+                $route[self::HTTP_METHOD_LABEL] === $routeMethod
+            ) {
                 return $key;
             }
         }
@@ -88,7 +104,7 @@ class FastRouter implements RouterInterface
      * @param callable $callback
      * @param mixed ...$groupHandlers
      */
-    public function addGroup(string $prefix, callable $callback, mixed ...$groupHandlers)
+    public function addGroup(string $prefix, callable $callback, mixed ...$groupHandlers): void
     {
         $previousGroupPrefix = $this->currentGroupPrefix;
         $previousGroupMiddlewares = $this->currentGroupMiddlewares;
@@ -167,6 +183,7 @@ class FastRouter implements RouterInterface
      *
      * @param string $route
      * @param callable $handler
+     * @return RouterInterface
      */
     public function patch(string $route, callable $handler): RouterInterface
     {
@@ -181,6 +198,7 @@ class FastRouter implements RouterInterface
      *
      * @param string $route
      * @param callable $handler
+     * @return RouterInterface
      */
     public function head(string $route, callable $handler): RouterInterface
     {
@@ -201,11 +219,13 @@ class FastRouter implements RouterInterface
             case FastRoute\Dispatcher::NOT_FOUND:
                 return ResponseBuilder::makeResponseWithCodeAndBody(
                     404,
-                    "Not Found");
+                    "Not Found"
+                );
             case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
                 return ResponseBuilder::makeResponseWithCodeAndBody(
                     405,
-                    "Method not allowed");
+                    "Method not allowed"
+                );
             case FastRoute\Dispatcher::FOUND:
                 array_shift($routeInfo);
                 list($handlers, $vars) = $routeInfo;
@@ -220,5 +240,4 @@ class FastRouter implements RouterInterface
 
         throw new RoutingLogicException('Something went wrong in routing.');
     }
-
 }

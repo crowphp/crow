@@ -1,7 +1,8 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Http\Server;
-
 
 use Crow\Handlers\SwooleRequestHandler;
 use Crow\Middlewares\UserMiddlewaresList;
@@ -13,17 +14,17 @@ final class CrowSwooleServer extends BaseServer
     private SwooleRequestHandler $requestHandler;
 
 
-    function __construct(SwoolePHPServer $swoolePHPServer,
-                         SwooleRequestHandler $requestHandler,
-                         UserMiddlewaresList $middlewaresList
-    )
-    {
+    public function __construct(
+        SwoolePHPServer $swoolePHPServer,
+        SwooleRequestHandler $requestHandler,
+        UserMiddlewaresList $middlewaresList
+    ) {
         $this->swoolePHPServer = $swoolePHPServer;
         $this->requestHandler = $requestHandler;
         parent::__construct($middlewaresList);
     }
 
-    public function listen(int $port = 5000, string $host = "127.0.0.1")
+    public function listen(int $port = 5000, string $host = "127.0.0.1"): void
     {
         $this->requestHandler->setRouter($this->router);
         $this->requestHandler->setMiddlewaresList($this->middlewaresList);
@@ -34,7 +35,7 @@ final class CrowSwooleServer extends BaseServer
         $this->server->start();
     }
 
-    private function setServerSettings()
+    private function setServerSettings(): void
     {
         if (count($this->configs) > 0) {
             $this->server->set($this->configs);

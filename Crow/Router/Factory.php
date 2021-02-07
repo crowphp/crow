@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Router;
 
@@ -14,6 +16,7 @@ class Factory
     {
         return new FastRouter(
             new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler()));
+            new RouteDispatchHandler(new QueueRequestHandler())
+        );
     }
 }

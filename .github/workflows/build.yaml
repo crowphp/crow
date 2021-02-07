@@ -16,8 +16,12 @@ jobs:
         id: extract_branch
       - name: Extract crowphp absolute path
         run: CROWPHP_PATH=$(pwd)
+      - name: Run PHP code sniffer
+        run: composer phpcs
+      - name: Run PHP static analysis
+        run: composer phpstan
       - name: Run PHPUnit
-        run: php -dxdebug.mode=coverage vendor/bin/phpunit --coverage-text --coverage-clover coverage/clover.xml --configuration=./phpunit.xml
+        run: composer phpunit
       - name: Create coverage badge
         run: |
           php vendor/bin/badger upload:coverage $BADGER_SERVER $BRANCH_NAME $BADGER_SECRET_KEY

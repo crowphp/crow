@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Http;
 
@@ -10,7 +12,7 @@ use React\Http\Message\ServerRequest as ReactRequest;
 class RequestFactory
 {
 
-    public function create(SwooleRawReq|ReactRequest|ServerRequestInterface $request): ServerRequestInterface
+    public function create(SwooleRawReq | ReactRequest | ServerRequestInterface $request): ServerRequestInterface
     {
         $serverRequest = null;
         switch ($request::class) {

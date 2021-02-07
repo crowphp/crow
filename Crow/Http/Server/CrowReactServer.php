@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Http\Server;
 
@@ -24,14 +26,13 @@ final class CrowReactServer extends BaseServer
         ReactPHPServer $reactPHPServer,
         ReactRequestHandler $requestHandler,
         UserMiddlewaresList $middlewaresList
-    )
-    {
+    ) {
         $this->reactPHPServer = $reactPHPServer;
         $this->requestHandler = $requestHandler;
         parent::__construct($middlewaresList);
     }
 
-    public function listen(int $port = 5000, string $host = "127.0.0.1")
+    public function listen(int $port = 5000, string $host = "127.0.0.1"): void
     {
         $this->requestHandler->setRouter($this->router);
         $this->requestHandler->setMiddlewaresList($this->middlewaresList);
@@ -48,5 +49,4 @@ final class CrowReactServer extends BaseServer
     {
         return $this->reactPHPServer->getLoop();
     }
-
 }

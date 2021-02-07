@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Http;
 
@@ -8,7 +10,7 @@ use Dflydev\FigCookies\SetCookies;
 
 class PsrToSwooleResponseBuilder
 {
-    const FSTAT_MODE_S_IFIFO = 0010000;
+    private const FSTAT_MODE_S_IFIFO = 0010000;
 
     public function toSwoole(ResponseInterface $psrResponse, Response $swooleResponse): Response
     {
@@ -16,10 +18,13 @@ class PsrToSwooleResponseBuilder
         $swooleResponse->status($psrResponse->getStatusCode());
         $this->copyBody($psrResponse, $swooleResponse);
         return $swooleResponse;
-
     }
 
-    private function copyHeaders($psrResponse, $swooleResponse)
+    /**
+     * @param ResponseInterface $psrResponse
+     * @param Response $swooleResponse
+     */
+    private function copyHeaders(ResponseInterface $psrResponse, Response $swooleResponse): void
     {
         if (empty($psrResponse->getHeaders())) {
             return;
@@ -34,7 +39,11 @@ class PsrToSwooleResponseBuilder
         }
     }
 
-    private function setCookies($swooleResponse, $psrResponse)
+    /**
+     * @param Response $swooleResponse
+     * @param ResponseInterface $psrResponse
+     */
+    private function setCookies(Response $swooleResponse, ResponseInterface $psrResponse): void
     {
         if (!$psrResponse->hasHeader('Set-Cookie')) {
             return;
@@ -55,7 +64,11 @@ class PsrToSwooleResponseBuilder
         }
     }
 
-    private function copyBody($psrResponse, $swooleResponse)
+    /**
+     * @param ResponseInterface $psrResponse
+     * @param Response $swooleResponse
+     */
+    private function copyBody(ResponseInterface $psrResponse, Response $swooleResponse): void
     {
         if ($psrResponse->getBody()->getSize() == 0) {
             $this->copyBodyIfIsAPipe($psrResponse, $swooleResponse);
@@ -69,7 +82,11 @@ class PsrToSwooleResponseBuilder
         $swooleResponse->write($psrResponse->getBody()->getContents());
     }
 
-    private function copyBodyIfIsAPipe($psrResponse, $swooleResponse)
+    /**
+     * @param ResponseInterface $psrResponse
+     * @param Response $swooleResponse
+     */
+    private function copyBodyIfIsAPipe(ResponseInterface $psrResponse, Response $swooleResponse): void
     {
         $resource = $psrResponse->getBody()->detach();
 
@@ -86,9 +103,16 @@ class PsrToSwooleResponseBuilder
         }
     }
 
-    private function isPipe($resource)
+    /**
+     * @param mixed $resource
+     * @return bool
+     */
+    private function isPipe(mixed $resource): bool
     {
         $stat = fstat($resource);
+        /**
+         * @phpstan-ignore-next-line
+         */
         return (isset($stat['mode']) && ($stat['mode'] & self::FSTAT_MODE_S_IFIFO) !== 0);
     }
 }

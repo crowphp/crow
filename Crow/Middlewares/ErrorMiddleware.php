@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Middlewares;
 
@@ -19,7 +21,8 @@ class ErrorMiddleware implements MiddlewareInterface
         } catch (\Exception | \LogicException $exception) {
             return ResponseBuilder::makeResponseWithCodeAndBody(
                 500,
-                ErrorHandler::exceptionToBody($exception));
+                ErrorHandler::exceptionToBody($exception)
+            );
         }
     }
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Http\Server;
 
@@ -18,7 +20,7 @@ class Factory
     public static function create(int $serverType): ServerInterface
     {
         switch ($serverType) {
-            case self::REACT_SERVER;
+            case self::REACT_SERVER:
                 return new CrowReactServer(
                     new ReactPHPServer(),
                     new ReactRequestHandler(
@@ -27,7 +29,7 @@ class Factory
                     ),
                     new UserMiddlewaresList()
                 );
-            case self::SWOOLE_SERVER;
+            case self::SWOOLE_SERVER:
                 return new CrowSwooleServer(
                     new SwoolePHPServer(),
                     new SwooleRequestHandler(
@@ -40,5 +42,4 @@ class Factory
         }
         throw new InvalidServerType("Invalid server type provided");
     }
-
 }

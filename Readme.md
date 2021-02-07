@@ -1,4 +1,5 @@
-Fast, unopinionated, minimalist web framework for PHP.
+Fast, unopinionated, minimalist web framework and server for PHP, built on top of Async PHP servers i.e SwoolePHP and ReactPHP. 
+CrowPHP Let's you build true microservices in PHP without the use of PHP-FPM and Nginx or Apache.
 
 ![Build Status](https://github.com/crowphp/crow/workflows/build/badge.svg)
 ![License](https://img.shields.io/github/license/crowphp/crow)
@@ -15,13 +16,13 @@ Fast, unopinionated, minimalist web framework for PHP.
 $ pecl install swoole
 ```
 
-Run the following command in a new PHP project:
+Installation of CrowPHP via composer, the following command will install the framework and all of its dependencies with it.
 
 ```
 composer install crowphp/crow
 ```
 
-### Usage
+### Hello world microservice using CrowPHP
 
 ```php
 <?php
@@ -43,3 +44,14 @@ $app->withRouter($router);
 
 $app->listen(5005);
 ```
+You may quickly test your newly built service as follows:
+```bash
+$ php index.php
+```
+Going to http://localhost:5005 will now display "Hello World".
+
+For more information on how to configure your web server, see the Documentation.
+
+## Tests
+To execute the test suite, you'll need to install all development dependencies.
+c
