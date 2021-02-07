@@ -1,13 +1,17 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Router;
+
+use FastRoute;
 
 interface DispatcherFactoryInterface
 {
 
     /**
-     * @param array $routeMap
-     * @return mixed
+     * @param array[] $routeMap
+     * @return FastRoute\Dispatcher
      */
-    public function make(array $routeMap);
+    public function make(array $routeMap): FastRoute\Dispatcher;
 }

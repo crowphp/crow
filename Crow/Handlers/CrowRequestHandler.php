@@ -1,20 +1,40 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Handlers;
 
 use Crow\Middlewares\UserMiddlewaresList;
 use Crow\Router\RouterInterface;
 
+/**
+ * Class CrowRequestHandler
+ * @Ca
+ * @package Crow\Handlers
+ */
 abstract class CrowRequestHandler
 {
+    /**
+     * @var RouterInterface
+     */
     protected RouterInterface $router;
+    /**
+     * @var UserMiddlewaresList
+     */
     protected UserMiddlewaresList $middlewaresList;
-    public function setRouter(RouterInterface $router)
+
+    /**
+     * @param RouterInterface $router
+     */
+    public function setRouter(RouterInterface $router): void
     {
         $this->router = $router;
     }
 
-    public function setMiddlewaresList(UserMiddlewaresList $middlewaresList)
+    /**
+     * @param UserMiddlewaresList $middlewaresList
+     */
+    public function setMiddlewaresList(UserMiddlewaresList $middlewaresList): void
     {
         $this->middlewaresList = $middlewaresList;
     }

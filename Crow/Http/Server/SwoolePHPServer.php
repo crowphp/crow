@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Http\Server;
 
@@ -10,5 +12,4 @@ class SwoolePHPServer
     {
         return new Swoole\Http\Server($host, $port);
     }
-
 }

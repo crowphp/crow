@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Http\Server;
 
@@ -12,18 +14,27 @@ abstract class BaseServer implements ServerInterface
 
     protected RouterInterface $router;
     protected UserMiddlewaresList $middlewaresList;
+    /**
+     * @var array[]
+     */
     protected array $eventListeners = [];
     protected int $loopTimeoutSeconds = 0;
+    /**
+     * @var string[]
+     */
     protected array $invalidEvents = ['request'];
+    /**
+     * @var array[]
+     */
     protected array $configs = [];
     protected mixed $server;
 
-    function __construct( UserMiddlewaresList $middlewaresList)
+    public function __construct(UserMiddlewaresList $middlewaresList)
     {
         $this->middlewaresList = $middlewaresList;
     }
 
-    protected function attachListeners()
+    protected function attachListeners(): void
     {
         foreach ($this->eventListeners as $eventListener) {
             $this->server->on($eventListener["eventName"], $eventListener["callback"]);
@@ -34,7 +45,7 @@ abstract class BaseServer implements ServerInterface
      * @param string $event
      * @param callable $callback
      */
-    public function on(string $event, callable $callback)
+    public function on(string $event, callable $callback): void
     {
         if (in_array($event, $this->invalidEvents)) {
             throw new InvalidEventType("This event type is not permitted");
@@ -60,7 +71,7 @@ abstract class BaseServer implements ServerInterface
      * Useful when writing unit tests.
      * @param int $seconds
      */
-    public function withTimeout(int $seconds)
+    public function withTimeout(int $seconds): void
     {
         $this->loopTimeoutSeconds = $seconds;
     }
@@ -69,15 +80,17 @@ abstract class BaseServer implements ServerInterface
      * Use method provides an interface for users to add middlewares
      * @param MiddlewareInterface|callable $middleware
      */
-    public function use(MiddlewareInterface|callable $middleware)
+    public function use(MiddlewareInterface | callable $middleware): void
     {
         $this->middlewaresList->add($middleware);
     }
 
 
-    public function configs(array $configs)
+    /**
+     * @param array[] $configs
+     */
+    public function configs(array $configs): void
     {
         $this->configs = $configs;
     }
-
 }

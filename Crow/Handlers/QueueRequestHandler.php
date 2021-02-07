@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Handlers;
 
@@ -10,9 +12,12 @@ use Psr\Http\Server\MiddlewareInterface;
 class QueueRequestHandler implements RequestHandlerInterface
 {
 
+    /**
+     * @var mixed[]
+     */
     private array $middleware = [];
 
-    public function add(MiddlewareInterface|callable $middleware)
+    public function add(MiddlewareInterface | callable $middleware): void
     {
         $this->middleware[] = $middleware;
     }
