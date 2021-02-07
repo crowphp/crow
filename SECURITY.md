@@ -6,7 +6,7 @@ Currently CrowPHP is in early development stage and things might change rather q
 
 | Version | Supported          |
 | ------- | ------------------ |
-| < 0.1   | :white_check_mark: |
+| 0.x   | :white_check_mark: |
 
 ## Reporting a Vulnerability
 
