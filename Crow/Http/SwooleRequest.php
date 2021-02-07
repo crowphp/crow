@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Http;
 
@@ -19,11 +21,26 @@ class SwooleRequest implements ServerRequestInterface
     private StreamInterface $body;
     private string $requestTarget;
     private string $method;
+    /**
+     * @var array[]
+     */
     private array $serverParams;
+    /**
+     * @var array[]
+     */
     private array $cookies = [];
+    /**
+     * @var array[]
+     */
     private array $queryParams = [];
+    /**
+     * @var array[]
+     */
     private array $fileParams;
     private mixed $parsedBody;
+    /**
+     * @var array[]
+     */
     private array $attributes;
     private string $protocol;
 
@@ -31,8 +48,7 @@ class SwooleRequest implements ServerRequestInterface
         Request $swooleRequest,
         UriFactoryInterface $uriFactory,
         StreamFactoryInterface $streamFactory
-    )
-    {
+    ) {
         $this->swooleRequest = $swooleRequest;
         $this->uriFactory = $uriFactory;
         $this->streamFactory = $streamFactory;
@@ -107,7 +123,7 @@ class SwooleRequest implements ServerRequestInterface
         );
     }
 
-    private function parseUserInfo(): bool|string|null
+    private function parseUserInfo(): string | null
     {
         $authorization = $this->swooleRequest->header['authorization'] ?? '';
 
@@ -141,7 +157,7 @@ class SwooleRequest implements ServerRequestInterface
     }
 
     /**
-     * @return array
+     * @return array[]
      */
     public function getHeaders(): array
     {
@@ -161,9 +177,6 @@ class SwooleRequest implements ServerRequestInterface
 
     public function getHeader($name): array
     {
-        if (!$this->hasHeader($name)) {
-            return [];
-        }
 
         foreach ($this->swooleRequest->header as $key => $value) {
             if (strtolower($name) == strtolower($key)) {
@@ -172,6 +185,7 @@ class SwooleRequest implements ServerRequestInterface
                     : [$value];
             }
         }
+        return [];
     }
 
     public function getHeaderLine($name): string
@@ -208,17 +222,13 @@ class SwooleRequest implements ServerRequestInterface
     public function withoutHeader($name): RequestInterface
     {
         $new = clone $this;
-
-        if (!$new->hasHeader($name)) {
-            return $new;
-        }
-
         foreach ($new->swooleRequest->header as $key => $value) {
             if (strtolower($name) == strtolower($key)) {
                 unset($new->swooleRequest->header[$key]);
                 return $new;
             }
         }
+        return $new;
     }
 
     public function getBody(): StreamInterface
@@ -233,16 +243,26 @@ class SwooleRequest implements ServerRequestInterface
         return $new;
     }
 
+    /**
+     * @return array[]
+     */
     public function getServerParams(): array
     {
         return $this->serverParams;
     }
 
+    /**
+     * @return array[]
+     */
     public function getCookieParams(): array
     {
         return $this->cookies;
     }
 
+    /**
+     * @param array[] $cookies
+     * @return ServerRequestInterface
+     */
     public function withCookieParams(array $cookies): ServerRequestInterface
     {
         $new = clone $this;
@@ -250,11 +270,18 @@ class SwooleRequest implements ServerRequestInterface
         return $new;
     }
 
+    /**
+     * @return array[]
+     */
     public function getQueryParams(): array
     {
         return $this->queryParams;
     }
 
+    /**
+     * @param array[] $query
+     * @return ServerRequestInterface
+     */
     public function withQueryParams(array $query): ServerRequestInterface
     {
         $new = clone $this;
@@ -262,11 +289,18 @@ class SwooleRequest implements ServerRequestInterface
         return $new;
     }
 
+    /**
+     * @return array[]
+     */
     public function getUploadedFiles(): array
     {
         return $this->fileParams;
     }
 
+    /**
+     * @param array[] $uploadedFiles
+     * @return ServerRequestInterface
+     */
     public function withUploadedFiles(array $uploadedFiles): ServerRequestInterface
     {
         $new = clone $this;
@@ -274,11 +308,18 @@ class SwooleRequest implements ServerRequestInterface
         return $new;
     }
 
+    /**
+     * @return mixed
+     */
     public function getParsedBody(): mixed
     {
         return $this->parsedBody;
     }
 
+    /**
+     * @param mixed $data
+     * @return ServerRequestInterface
+     */
     public function withParsedBody($data): ServerRequestInterface
     {
         $new = clone $this;
@@ -286,12 +327,15 @@ class SwooleRequest implements ServerRequestInterface
         return $new;
     }
 
+    /**
+     * @return array[]
+     */
     public function getAttributes(): array
     {
         return $this->attributes;
     }
 
-    public function getAttribute($name, $default = null)
+    public function getAttribute($name, $default = null): mixed
     {
         if (!\array_key_exists($name, $this->attributes)) {
             return $default;
@@ -299,14 +343,23 @@ class SwooleRequest implements ServerRequestInterface
         return $this->attributes[$name];
     }
 
-    public function withAttribute($name, $value)
+    /**
+     * @param string $name
+     * @param mixed $value
+     * @return ServerRequestInterface
+     */
+    public function withAttribute($name, $value): ServerRequestInterface
     {
         $new = clone $this;
         $new->attributes[$name] = $value;
         return $new;
     }
 
-    public function withoutAttribute($name)
+    /**
+     * @param string $name
+     * @return ServerRequestInterface
+     */
+    public function withoutAttribute($name): ServerRequestInterface
     {
         $new = clone $this;
         unset($new->attributes[$name]);

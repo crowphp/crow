@@ -1,9 +1,12 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Router;
 
 use FastRoute;
 use Exception;
+
 use function FastRoute\simpleDispatcher;
 
 class FastRouteDispatcher implements DispatcherFactoryInterface
@@ -11,7 +14,7 @@ class FastRouteDispatcher implements DispatcherFactoryInterface
 
 
     /**
-     * @param array $routeMap
+     * @param array<array> $routeMap
      * @return FastRoute\Dispatcher
      * @throws Exception
      */
@@ -22,9 +25,9 @@ class FastRouteDispatcher implements DispatcherFactoryInterface
                 $r->addRoute(
                     $route[FastRouter::HTTP_METHOD_LABEL],
                     $route[FastRouter::ROUTE_LABEL],
-                    $route[FastRouter::HANDLER_LABEL]);
+                    $route[FastRouter::HANDLER_LABEL]
+                );
             }
         });
     }
-
 }

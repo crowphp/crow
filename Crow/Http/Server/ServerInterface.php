@@ -1,10 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Http\Server;
 
 use Crow\Handlers\QueueRequestHandler;
 use Crow\Router\RouterInterface;
-
 
 interface ServerInterface
 {
@@ -15,14 +16,14 @@ interface ServerInterface
      * @param string $host
      */
 
-    public function listen(int $port = 5000, string $host = "127.0.0.1");
+    public function listen(int $port = 5000, string $host = "127.0.0.1"): void;
 
     /**
      * Function to set timeout after which the server loop stops
      * Useful when writing unit tests.
      * @param int $seconds
      */
-    public function withTimeout(int $seconds);
+    public function withTimeout(int $seconds): void;
 
 
     /**
@@ -30,7 +31,7 @@ interface ServerInterface
      * @param string $event
      * @param callable $callback
      */
-    public function on(string $event, callable $callback);
+    public function on(string $event, callable $callback): void;
 
 
     /**
@@ -38,12 +39,11 @@ interface ServerInterface
      * for routes and middleware handling.
      * @param RouterInterface $router
      */
-    public function withRouter(RouterInterface $router);
+    public function withRouter(RouterInterface $router): void;
 
     /**
      * Adds new middlewares to the global handlers for the server
      * @param callable $middleware
      */
-    public function use(callable $middleware);
-
+    public function use(callable $middleware): void;
 }

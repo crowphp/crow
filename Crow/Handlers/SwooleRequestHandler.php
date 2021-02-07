@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Handlers;
 
@@ -13,18 +15,21 @@ class SwooleRequestHandler extends CrowRequestHandler
     private PsrToSwooleResponseBuilder $psrToSwooleResponseBuilder;
     private RequestFactory $requestFactory;
 
-    function __construct(
+    public function __construct(
         QueueRequestHandlerBuilder $queueRequestHandlerBuilder,
         PsrToSwooleResponseBuilder $psrToSwooleResponseBuilder,
         RequestFactory $requestFactory
-    )
-    {
+    ) {
         $this->queueRequestHandlerBuilder = $queueRequestHandlerBuilder;
         $this->psrToSwooleResponseBuilder = $psrToSwooleResponseBuilder;
         $this->requestFactory = $requestFactory;
     }
 
-    public function __invoke(Request $request, Response $response)
+    /**
+     * @param Request $request
+     * @param Response $response
+     */
+    public function __invoke(Request $request, Response $response): void
     {
 
         $this->psrToSwooleResponseBuilder->toSwoole(

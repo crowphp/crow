@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Crow\Handlers;
 
@@ -10,11 +12,11 @@ class ReactRequestHandler extends CrowRequestHandler
 {
     private QueueRequestHandlerBuilder $queueRequestHandlerBuilder;
     private RequestFactory $requestFactory;
-    function __construct(
-         QueueRequestHandlerBuilder $queueRequestHandlerBuilder,
-         RequestFactory $requestFactory
-    )
-    {
+
+    public function __construct(
+        QueueRequestHandlerBuilder $queueRequestHandlerBuilder,
+        RequestFactory $requestFactory
+    ) {
         $this->queueRequestHandlerBuilder = $queueRequestHandlerBuilder;
         $this->requestFactory = $requestFactory;
     }
