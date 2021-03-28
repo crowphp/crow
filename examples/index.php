@@ -47,6 +47,7 @@ $router->get('/id/{id}', function (RequestInterface $request, ResponseInterface 
     return $next->handle($request);
 });
 
+
 $router->addGroup('/yousaf', function (RouterInterface $router) {
     $router->get('/sunny/id/{id}', function (RequestInterface $request, ResponseInterface $response, $id): ResponseInterface {
 
