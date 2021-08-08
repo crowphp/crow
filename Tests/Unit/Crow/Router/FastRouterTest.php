@@ -1,30 +1,30 @@
-<?php declare(strict_types=1);
+<?php
 
-namespace Test\Unit\Crow\Router;
+declare(strict_types=1);
 
-use Crow\Handlers\QueueRequestHandler;
-use Crow\Handlers\RouteDispatchHandler;
-use Crow\Router\Exceptions\RoutingLogicException;
-use Crow\Router\FastRouteDispatcher;
+namespace Tests\Unit\Crow\Router;
+
 use Exception;
-use Crow\Router\RouterInterface;
-use Crow\Router\FastRouter;
 use Prophecy\Argument;
 use FastRoute\Dispatcher;
+use Crow\Router\FastRouter;
+use PHPUnit\Framework\TestCase;
+use Crow\Router\RouterInterface;
+use Prophecy\PhpUnit\ProphecyTrait;
+use Crow\Router\FastRouteDispatcher;
+use Crow\Handlers\QueueRequestHandler;
+use Crow\Handlers\RouteDispatchHandler;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\ServerRequestFactory;
-use PHPUnit\Framework\TestCase;
-use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Server\RequestHandlerInterface;
-use React\Http\Message\Response;
-
+use Crow\Router\Exceptions\RoutingLogicException;
 
 class FastRouterTest extends TestCase
 {
-
     use ProphecyTrait;
+
     private function makeRequest($uri, $method): ServerRequestInterface
     {
         $requestFactory = new ServerRequestFactory();
@@ -38,7 +38,8 @@ class FastRouterTest extends TestCase
     {
         $router = new FastRouter(
             new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler()));
+            new RouteDispatchHandler(new QueueRequestHandler())
+        );
         $router->patch('/patch', function ($request, ResponseInterface $response) {
             return $response->withStatus(303);
         });
@@ -51,7 +52,8 @@ class FastRouterTest extends TestCase
     {
         $router = new FastRouter(
             new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler()));
+            new RouteDispatchHandler(new QueueRequestHandler())
+        );
         $router->head('/head', function ($request, ResponseInterface $response) {
             return $response->withStatus(304);
         });
@@ -113,8 +115,10 @@ class FastRouterTest extends TestCase
                     return [100];
                 }
             });
-        $router = new FastRouter($fastRouteDispatcher->reveal(),
-            new RouteDispatchHandler(new QueueRequestHandler()));
+        $router = new FastRouter(
+            $fastRouteDispatcher->reveal(),
+            new RouteDispatchHandler(new QueueRequestHandler())
+        );
         $router->get('/get', function ($request, ResponseInterface $response) {
             return $response;
         });
@@ -216,7 +220,6 @@ class FastRouterTest extends TestCase
         $this->assertEquals(306, $response->getStatusCode());
         $this->assertEquals("Hello", $response->getBody()->__toString());
         $this->assertEquals("TestVal", $response->getHeaderLine('Test'));
-
     }
 
     public function testGet()
@@ -278,7 +281,8 @@ class FastRouterTest extends TestCase
         $this->assertEquals("1212", $response2->getBody()->__toString());
     }
 
-    function testMiddleware(){
+    function testMiddleware()
+    {
         $router = new FastRouter(
             new FastRouteDispatcher(),
             new RouteDispatchHandler(new QueueRequestHandler())
@@ -287,12 +291,14 @@ class FastRouterTest extends TestCase
         $router->middleware(function (ServerRequestInterface $request, RequestHandlerInterface $next) {
             return $next->handle($request);
         });
-        $router->get('/get/id/{id}/sunny/{sunny}',
+        $router->get(
+            '/get/id/{id}/sunny/{sunny}',
             function (RequestInterface $request, ResponseInterface $response, $id, $sunny) {
-            $response->getBody()->write($id . $sunny);
-            return $response->withStatus(200);
-        })->middleware(function (ServerRequestInterface $request, RequestHandlerInterface $next) {
-            return $next->handle($request);
+                $response->getBody()->write($id . $sunny);
+                return $response->withStatus(200);
+            }
+        )->middleware(function (ServerRequestInterface $request, RequestHandlerInterface $next) {
+                return $next->handle($request);
         });
 
         $response = $router->dispatch(
@@ -300,5 +306,4 @@ class FastRouterTest extends TestCase
         );
         $this->assertEquals(200, $response->getStatusCode());
     }
-
 }

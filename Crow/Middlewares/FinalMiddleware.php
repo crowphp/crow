@@ -4,15 +4,16 @@ declare(strict_types=1);
 
 namespace Crow\Middlewares;
 
+use Crow\Http\Response;
 use Crow\Http\DefaultHeaders;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use React\Http\Message\Response;
 
 class FinalMiddleware implements MiddlewareInterface
 {
+    private const HOST_HEADER_LABEL = "host";
     private $handler;
     /**
      * @var string[]
@@ -35,16 +36,31 @@ class FinalMiddleware implements MiddlewareInterface
         return call_user_func(
             $this->handler,
             $request,
-            new Response(
-                200,
-                array_merge(
-                    DefaultHeaders::get(),
-                    [
-                        "Host" => $request->getHeader("host")
-                    ]
-                )
-            ),
+            $this->makeResponse($request),
             ...array_values($this->args)
         );
+    }
+
+    private function makeResponse(ServerRequestInterface $request): ResponseInterface
+    {
+        $response = new Response();
+        $defaultHeaders = DefaultHeaders::get();
+        if ($request->hasHeader(self::HOST_HEADER_LABEL)) {
+            $defaultHeaders = array_merge(
+                $defaultHeaders,
+                [
+                    self::HOST_HEADER_LABEL => $request->getHeader(self::HOST_HEADER_LABEL)
+                ]
+            );
+        }
+
+        foreach ($defaultHeaders as $defaultHeader => $defaultHeaderValue) {
+            $response->withHeader(
+                $defaultHeader,
+                $defaultHeaderValue
+            );
+        }
+
+        return $response;
     }
 }

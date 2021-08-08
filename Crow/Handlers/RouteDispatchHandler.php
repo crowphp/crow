@@ -7,6 +7,7 @@ namespace Crow\Handlers;
 use Crow\Middlewares\FinalMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Http\Server\MiddlewareInterface;
 
 class RouteDispatchHandler
 {
@@ -18,10 +19,10 @@ class RouteDispatchHandler
     }
 
     /**
-     * @param mixed[] $middlewares
+     * @param array<MiddlewareInterface|callable> $middlewares
      * @param callable $handler
      * @param ServerRequestInterface $request
-     * @param mixed[] $args
+     * @param string[] $args
      * @return ResponseInterface
      */
     public function __invoke(

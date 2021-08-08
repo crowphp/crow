@@ -5,19 +5,12 @@ declare(strict_types=1);
 namespace Crow\Handlers;
 
 use Exception;
+use JetBrains\PhpStorm\Pure;
 use LogicException;
 
-/**
- * Class ErrorHandler
- * @package Crow\Handlers
- */
 class ErrorHandler
 {
 
-    /**
-     * @param Exception|LogicException $exception
-     * @return string
-     */
     public static function exceptionToBody(Exception | LogicException $exception): string
     {
         return "Uncaught Error: " . $exception->getMessage() .

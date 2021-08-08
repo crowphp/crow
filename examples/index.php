@@ -8,7 +8,6 @@ use Crow\Http\Server\Factory as CrowServer;
 use Crow\Router\RouterInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 
-
 $app = CrowServer::create(CrowServer::SWOOLE_SERVER);
 $router = Crow\Router\Factory::make();
 
@@ -21,7 +20,8 @@ $router->get('/', function (RequestInterface $request, ResponseInterface $respon
     $response->getBody()->write('Hello World home' . $request->getProtocolVersion());
     return $response->withHeader(
         'Set-Cookie',
-        urlencode($key) . '=' . urlencode('test;more'));
+        urlencode($key) . '=' . urlencode('test;more')
+    );
 });
 
 $router->get('/sleep5', function (RequestInterface $request, ResponseInterface $response) {
@@ -68,7 +68,6 @@ $router->addGroup('/yousaf', function (RouterInterface $router) {
             return $response;
         });
     });
-
 }, function (RequestInterface $request, RequestHandlerInterface $next) {
     echo "This is a group middleware 1\n";
     return $next->handle($request);
@@ -81,7 +80,6 @@ $app->withRouter($router);
 
 $app->withTimeout(5);
 //Uncaught Exceptions
-
 
 $app->use(function (RequestInterface $request, RequestHandlerInterface $next) {
     echo "This is a global middleware 1\n";

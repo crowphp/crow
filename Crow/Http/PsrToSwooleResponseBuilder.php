@@ -20,10 +20,6 @@ class PsrToSwooleResponseBuilder
         return $swooleResponse;
     }
 
-    /**
-     * @param ResponseInterface $psrResponse
-     * @param Response $swooleResponse
-     */
     private function copyHeaders(ResponseInterface $psrResponse, Response $swooleResponse): void
     {
         if (empty($psrResponse->getHeaders())) {
@@ -39,10 +35,6 @@ class PsrToSwooleResponseBuilder
         }
     }
 
-    /**
-     * @param Response $swooleResponse
-     * @param ResponseInterface $psrResponse
-     */
     private function setCookies(Response $swooleResponse, ResponseInterface $psrResponse): void
     {
         if (!$psrResponse->hasHeader('Set-Cookie')) {
@@ -64,10 +56,6 @@ class PsrToSwooleResponseBuilder
         }
     }
 
-    /**
-     * @param ResponseInterface $psrResponse
-     * @param Response $swooleResponse
-     */
     private function copyBody(ResponseInterface $psrResponse, Response $swooleResponse): void
     {
         if ($psrResponse->getBody()->getSize() == 0) {
@@ -82,10 +70,6 @@ class PsrToSwooleResponseBuilder
         $swooleResponse->write($psrResponse->getBody()->getContents());
     }
 
-    /**
-     * @param ResponseInterface $psrResponse
-     * @param Response $swooleResponse
-     */
     private function copyBodyIfIsAPipe(ResponseInterface $psrResponse, Response $swooleResponse): void
     {
         $resource = $psrResponse->getBody()->detach();
@@ -103,10 +87,6 @@ class PsrToSwooleResponseBuilder
         }
     }
 
-    /**
-     * @param mixed $resource
-     * @return bool
-     */
     private function isPipe(mixed $resource): bool
     {
         $stat = fstat($resource);

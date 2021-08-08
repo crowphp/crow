@@ -1,11 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Crow\Http;
 
 use Crow\Http\ResponseBuilder;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ResponseInterface;
-use \TypeError;
+use TypeError;
 
 class ResponseBuilderTest extends TestCase
 {
@@ -15,7 +17,8 @@ class ResponseBuilderTest extends TestCase
 
         $this->assertInstanceOf(
             ResponseInterface::class,
-            ResponseBuilder::makeResponseWithCodeAndBody(405, "Here"));
+            ResponseBuilder::makeResponseWithCodeAndBody(405, "Here")
+        );
     }
 
     public function testInvalidCodeTypeWhenMakingResponseWithCode()

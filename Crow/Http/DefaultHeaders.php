@@ -6,6 +6,7 @@ namespace Crow\Http;
 
 class DefaultHeaders
 {
+
     /**
      * @return string[]
      */
