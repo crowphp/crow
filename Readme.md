@@ -1,4 +1,4 @@
-Fast un-opinionated minimalist web framework and server for PHP built on top of Async PHP servers  (SwoolePHP and ReactPHP).
+Fast un-opinionated minimalist web framework and server for PHP built on top of Async PHP server  (SwoolePHP).
 CrowPHP lets you build real microservices in PHP without the use of PHP-FPM/Nginx or Apache.
 
 
