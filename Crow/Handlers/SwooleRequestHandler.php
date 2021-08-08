@@ -25,10 +25,6 @@ class SwooleRequestHandler extends CrowRequestHandler
         $this->requestFactory = $requestFactory;
     }
 
-    /**
-     * @param Request $request
-     * @param Response $response
-     */
     public function __invoke(Request $request, Response $response): void
     {
 

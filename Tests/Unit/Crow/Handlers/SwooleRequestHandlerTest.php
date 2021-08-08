@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Crow\Handlers;
 
@@ -40,7 +42,6 @@ class SwooleRequestHandlerTest extends TestCase
 
         $this->swooleRequest = $this->getMockBuilder(RequestFactory::class)
             ->disableOriginalConstructor()->getMock();
-
     }
 
 
@@ -57,7 +58,6 @@ class SwooleRequestHandlerTest extends TestCase
         );
         $userMiddlewares = new UserMiddlewaresList();
         $userMiddlewares->add(function () {
-
         });
         $swooleRequestHandler->setMiddlewaresList(new UserMiddlewaresList());
         $swooleRequestHandler->setRouter($this->router);
@@ -66,6 +66,4 @@ class SwooleRequestHandlerTest extends TestCase
         $this->assertEquals(1, $toRequestSpy->getInvocationCount());
         $this->assertEquals(1, $toSwooleSpy->getInvocationCount());
     }
-
-
 }

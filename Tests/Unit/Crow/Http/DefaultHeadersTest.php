@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Crow\Http;
 
@@ -10,11 +12,13 @@ class DefaultHeadersTest extends TestCase
 
     public function testIfHasServerKey()
     {
-        $this->assertArrayHasKey('Server',
+        $this->assertArrayHasKey(
+            'Server',
             DefaultHeaders::get()
         );
 
-        $this->assertEquals('CrowPHP/1',
+        $this->assertEquals(
+            'CrowPHP/1',
             DefaultHeaders::get()["Server"]
         );
     }

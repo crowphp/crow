@@ -22,6 +22,5 @@ class FastRouteDispatcherTest extends TestCase
         ]);
 
         $this->assertTrue($dispatcher instanceof FastRoute\Dispatcher);
-
     }
 }

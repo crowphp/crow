@@ -20,15 +20,6 @@ class Factory
     public static function create(int $serverType): ServerInterface
     {
         switch ($serverType) {
-            case self::REACT_SERVER:
-                return new CrowReactServer(
-                    new ReactPHPServer(),
-                    new ReactRequestHandler(
-                        new QueueRequestHandlerBuilder(),
-                        new RequestFactory()
-                    ),
-                    new UserMiddlewaresList()
-                );
             case self::SWOOLE_SERVER:
                 return new CrowSwooleServer(
                     new SwoolePHPServer(),

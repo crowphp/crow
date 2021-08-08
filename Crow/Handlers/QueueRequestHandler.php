@@ -11,13 +11,12 @@ use Psr\Http\Server\MiddlewareInterface;
 
 class QueueRequestHandler implements RequestHandlerInterface
 {
-
     /**
-     * @var mixed[]
+     * @var array<MiddlewareInterface|callable>
      */
     private array $middleware = [];
 
-    public function add(MiddlewareInterface | callable $middleware): void
+    public function add(MiddlewareInterface|callable $middleware): void
     {
         $this->middleware[] = $middleware;
     }
@@ -26,9 +25,13 @@ class QueueRequestHandler implements RequestHandlerInterface
     {
         $middleware = array_shift($this->middleware);
 
-        if (is_callable($middleware)) {
-            return $middleware($request, $this);
+        if ($middleware instanceof MiddlewareInterface) {
+            return $middleware->process($request, $this);
         }
-        return $middleware->process($request, $this);
+
+        /**
+         * @phpstan-ignore-next-line
+         */
+        return $middleware($request, $this);
     }
 }
