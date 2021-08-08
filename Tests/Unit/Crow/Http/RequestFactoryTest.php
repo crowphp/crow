@@ -1,12 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Test\Unit\Crow\Http;
 
+use Crow\Http\Request;
 use Crow\Http\RequestFactory;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\ServerRequestInterface;
 use Swoole\Http\Request as SwooleReq;
-use React\Http\Message\ServerRequest as ReactReq;
 
 class RequestFactoryTest extends TestCase
 {
@@ -31,13 +33,12 @@ class RequestFactoryTest extends TestCase
     {
         $factory = new RequestFactory();
         $request = $factory->create(
-            new ReactReq(
+            Request::makeRequest(
                 'GET',
                 'https://localhost'
             )
         );
 
         $this->assertEquals(true, $request instanceof ServerRequestInterface);
-        $this->assertEquals(true, $request instanceof ReactReq);
     }
 }

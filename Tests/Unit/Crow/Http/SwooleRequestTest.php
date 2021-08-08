@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Test\Unit\Crow\Http;
 
@@ -25,10 +27,11 @@ class SwooleRequestTest extends TestCase
         $swoole->header['host'] = "localhost";
         $swoole->header['foo'] = "bar";
         $swoole->header['authorization'] = "Basic MTMx";
-        return new SwooleRequest($swoole,
+        return new SwooleRequest(
+            $swoole,
             new Psr17Factory(),
-            new Psr17Factory());
-
+            new Psr17Factory()
+        );
     }
 
     private function makeUriFactory(): UriFactoryInterface
@@ -67,7 +70,8 @@ class SwooleRequestTest extends TestCase
 
         $this->assertEquals(
             true,
-            $this->makeRequest()->hasHeader('foo'));
+            $this->makeRequest()->hasHeader('foo')
+        );
     }
 
     public function testWithAddedHeader()
@@ -75,10 +79,12 @@ class SwooleRequestTest extends TestCase
         $request = $this->makeRequest()->withAddedHeader('foo2', "bar2");
         $this->assertEquals(
             true,
-            $request->hasHeader("foo2"));
+            $request->hasHeader("foo2")
+        );
         $this->assertEquals(
             "bar2",
-            $request->getHeaderLine("foo2"));
+            $request->getHeaderLine("foo2")
+        );
     }
 
     public function testWithAddedHeaderArray()
@@ -89,10 +95,12 @@ class SwooleRequestTest extends TestCase
             ->withAddedHeader('foo2', "bar4");
         $this->assertEquals(
             true,
-            $request->hasHeader("foo2"));
+            $request->hasHeader("foo2")
+        );
         $this->assertEquals(
             "bar2,bar3,bar4",
-            $request->getHeaderLine("foo2"));
+            $request->getHeaderLine("foo2")
+        );
     }
 
 
@@ -101,10 +109,12 @@ class SwooleRequestTest extends TestCase
         $request = $this->makeRequest()->withAddedHeader('foo', "bar2");
         $this->assertEquals(
             true,
-            $request->hasHeader("foo"));
+            $request->hasHeader("foo")
+        );
         $this->assertEquals(
             "bar,bar2",
-            $request->getHeaderLine("foo"));
+            $request->getHeaderLine("foo")
+        );
     }
 
     public function testWithRequestTarget()
@@ -113,7 +123,8 @@ class SwooleRequestTest extends TestCase
 
         $this->assertEquals(
             "/foo",
-            $request->getRequestTarget());
+            $request->getRequestTarget()
+        );
     }
 
     public function testWithoutHeader()
@@ -122,7 +133,8 @@ class SwooleRequestTest extends TestCase
 
         $this->assertEquals(
             false,
-            $request->hasHeader("foo"));
+            $request->hasHeader("foo")
+        );
     }
 
     public function testWithoutHeaderWhenItsAlreadyNotPresent()
@@ -131,7 +143,8 @@ class SwooleRequestTest extends TestCase
 
         $this->assertEquals(
             false,
-            $request->hasHeader("foo5"));
+            $request->hasHeader("foo5")
+        );
     }
 
     public function testWithBody()
@@ -141,7 +154,8 @@ class SwooleRequestTest extends TestCase
         $request = $this->makeRequest()->withBody($stream);
         $this->assertEquals(
             "Hello",
-            $request->getBody()->__toString());
+            $request->getBody()->__toString()
+        );
     }
 
     public function testGetBody()
@@ -151,52 +165,60 @@ class SwooleRequestTest extends TestCase
         $request = $this->makeRequest()->withBody($stream);
         $this->assertEquals(
             "Hello",
-            $request->getBody()->__toString());
+            $request->getBody()->__toString()
+        );
         $this->assertEquals(
             true,
-            $request->getBody() instanceof StreamInterface);
+            $request->getBody() instanceof StreamInterface
+        );
     }
 
     public function testGetHeader()
     {
         $this->assertEquals(
             ["bar"],
-            $this->makeRequest()->getHeader("foo"));
+            $this->makeRequest()->getHeader("foo")
+        );
     }
 
     public function testGetHeaderOfNonExistingValue()
     {
         $this->assertEquals(
             [],
-            $this->makeRequest()->getHeader("fool"));
+            $this->makeRequest()->getHeader("fool")
+        );
     }
 
     public function testWithProtocolVersion()
     {
         $this->assertEquals(
             "2.0",
-            $this->makeRequest()->withProtocolVersion("2.0")->getProtocolVersion());
+            $this->makeRequest()->withProtocolVersion("2.0")->getProtocolVersion()
+        );
     }
 
     public function testWithHeader()
     {
         $this->assertEquals(
             ["bar3"],
-            $this->makeRequest()->withHeader("foo3", "bar3")->getHeader("foo3"));
+            $this->makeRequest()->withHeader("foo3", "bar3")->getHeader("foo3")
+        );
     }
 
     public function testGetHeaderLine()
     {
         $this->assertEquals(
             "bar",
-            $this->makeRequest()->getHeaderLine("foo"));
+            $this->makeRequest()->getHeaderLine("foo")
+        );
     }
 
     public function testGetMethod()
     {
         $this->assertEquals(
             "GET",
-            $this->makeRequest()->getMethod());
+            $this->makeRequest()->getMethod()
+        );
     }
 
     public function testWithUri()
@@ -205,14 +227,16 @@ class SwooleRequestTest extends TestCase
         $this->assertEquals(
             $uri,
             $this->makeRequest()
-                ->withUri($uri)->getUri());
+            ->withUri($uri)->getUri()
+        );
     }
 
     public function testGetHeaders()
     {
         $this->assertEquals(
             ["foo" => "bar", "host" => "localhost", "authorization" => "Basic MTMx"],
-            $this->makeRequest()->getHeaders());
+            $this->makeRequest()->getHeaders()
+        );
     }
 
     public function testWithAuthHeaders()
@@ -234,7 +258,8 @@ class SwooleRequestTest extends TestCase
     {
         $this->assertEquals(
             "POST",
-            $this->makeRequest()->withMethod("POST")->getMethod());
+            $this->makeRequest()->withMethod("POST")->getMethod()
+        );
     }
 
     public function testWithMethodException()
@@ -249,49 +274,57 @@ class SwooleRequestTest extends TestCase
             $this->makeUriFactory()->createUri("localhost:8080/uri?foo=bar")
                 ->withHost("localhost")
                 ->withUserInfo(base64_decode("MTMx")),
-            $this->makeRequest()->getUri());
+            $this->makeRequest()->getUri()
+        );
     }
 
     public function testGetServerParams()
     {
         $this->assertIsArray(
-            $this->makeRequest()->getServerParams());
+            $this->makeRequest()->getServerParams()
+        );
     }
 
     public function testGetCookieParams()
     {
         $this->assertIsArray(
-            $this->makeRequest()->getCookieParams());
+            $this->makeRequest()->getCookieParams()
+        );
     }
 
     public function testWithCookieParams()
     {
         $this->assertTrue(
-            $this->makeRequest()->withCookieParams(["hi" => "cookie"]) instanceof ServerRequestInterface);
+            $this->makeRequest()->withCookieParams(["hi" => "cookie"]) instanceof ServerRequestInterface
+        );
     }
 
     public function testGetQueryParams()
     {
         $this->assertIsArray(
-            $this->makeRequest()->getQueryParams());
+            $this->makeRequest()->getQueryParams()
+        );
     }
 
     public function testWithQueryParams()
     {
         $this->assertTrue(
-            $this->makeRequest()->withQueryParams(['hi' => "param"]) instanceof ServerRequestInterface);
+            $this->makeRequest()->withQueryParams(['hi' => "param"]) instanceof ServerRequestInterface
+        );
     }
 
     public function testWithUploadedFiles()
     {
         $this->assertTrue(
-            $this->makeRequest()->withUploadedFiles(['hi' => "param"]) instanceof ServerRequestInterface);
+            $this->makeRequest()->withUploadedFiles(['hi' => "param"]) instanceof ServerRequestInterface
+        );
     }
 
     public function testGetUploadedFiles()
     {
         $this->assertIsArray(
-            $this->makeRequest()->getUploadedFiles());
+            $this->makeRequest()->getUploadedFiles()
+        );
     }
 
 

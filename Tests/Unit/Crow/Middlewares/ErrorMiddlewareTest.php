@@ -12,7 +12,6 @@ use Psr\Http\Message\ResponseInterface;
 
 class ErrorMiddlewareTest extends TestCase
 {
-
     use ProphecyTrait;
 
     public function testProcess()
@@ -24,7 +23,11 @@ class ErrorMiddlewareTest extends TestCase
             }
         );
         $request = ServerRequestFactory::fromGlobals(
-            $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES
+            $_SERVER,
+            $_GET,
+            $_POST,
+            $_COOKIE,
+            $_FILES
         );
         $errorMiddleware = new ErrorMiddleware();
 
@@ -33,9 +36,6 @@ class ErrorMiddlewareTest extends TestCase
             $requestHandler
         );
 
-
         $this->assertEquals(true, $response instanceof ResponseInterface);
-
     }
-
 }

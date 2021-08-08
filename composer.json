@@ -28,7 +28,6 @@
     "phpstan": "phpstan analyse Crow --memory-limit=-1"
   },
   "require": {
-    "react/http": "^1.2",
     "ext-json": "*",
     "nikic/fast-route": "^1.3",
     "nyholm/psr7": "^1.3",
@@ -48,6 +47,6 @@
     "laminas/laminas-diactoros": "^2.5",
     "crowphp/badger": "^0.3.0",
     "phpstan/phpstan": "^0.12.72",
-    "squizlabs/php_codesniffer": "^3.5"
+    "squizlabs/php_codesniffer": "3.*"
   }
 }

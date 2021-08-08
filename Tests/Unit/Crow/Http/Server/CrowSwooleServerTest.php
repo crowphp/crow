@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Tests\Unit\Crow\Http\Server;
 
@@ -29,7 +31,6 @@ class CrowSwooleServerTest extends TestCase
         $this->swooleRequestHandler = $this->getMockBuilder(SwooleRequestHandler::class)
             ->disableOriginalConstructor()->getMock();
         $this->router = $this->getMockForAbstractClass(RouterInterface::class);
-
     }
 
     public function testListen()
@@ -37,7 +38,8 @@ class CrowSwooleServerTest extends TestCase
         $crowSwooleServer = new CrowSwooleServer(
             $this->swoolePHPServer,
             $this->swooleRequestHandler,
-            new UserMiddlewaresList());
+            new UserMiddlewaresList()
+        );
         $crowSwooleServer->withRouter($this->router);
         $crowSwooleServer->on('error', function () {
         });
@@ -70,7 +72,8 @@ class CrowSwooleServerTest extends TestCase
         $crowSwooleServer = new CrowSwooleServer(
             $this->swoolePHPServer,
             $this->swooleRequestHandler,
-            new UserMiddlewaresList());
+            new UserMiddlewaresList()
+        );
         $this->expectException(InvalidEventType::class);
         $crowSwooleServer->on('request', function () {
         });

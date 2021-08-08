@@ -19,8 +19,8 @@ class QueueRequestHandlerBuilderTest extends TestCase
         $middlewaresList->add(function () {
         });
         $this->assertTrue($queueRequestHandlerBuilder->build(
-                $middlewaresList,
-                $this->getMockForAbstractClass(RouterInterface::class)
-            ) instanceof QueueRequestHandler);
+            $middlewaresList,
+            $this->getMockForAbstractClass(RouterInterface::class)
+        ) instanceof QueueRequestHandler);
     }
 }

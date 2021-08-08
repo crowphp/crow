@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Test\Unit\Crow\Middlewares;
 
@@ -10,7 +12,6 @@ use PHPUnit\Framework\TestCase;
 use Prophecy\PhpUnit\ProphecyTrait;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-
 
 class RoutingMiddlewareTest extends TestCase
 {
@@ -29,7 +30,11 @@ class RoutingMiddlewareTest extends TestCase
     public function testIfRoutingMiddlewareCalledWithoutAnyRoutesShouldReturnNotFound()
     {
         $request = ServerRequestFactory::fromGlobals(
-            $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES
+            $_SERVER,
+            $_GET,
+            $_POST,
+            $_COOKIE,
+            $_FILES
         );
         $routingMiddleware = new RoutingMiddleware(RouterFactory::make());
         $response = $routingMiddleware->process(
@@ -64,7 +69,11 @@ class RoutingMiddlewareTest extends TestCase
     public function testRoutingMiddlewareReturnsResponseObject()
     {
         $request = ServerRequestFactory::fromGlobals(
-            $_SERVER, $_GET, $_POST, $_COOKIE, $_FILES
+            $_SERVER,
+            $_GET,
+            $_POST,
+            $_COOKIE,
+            $_FILES
         );
         $routingMiddleware = new RoutingMiddleware(RouterFactory::make());
         $response = $routingMiddleware->process(
