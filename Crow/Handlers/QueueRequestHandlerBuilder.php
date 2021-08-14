@@ -7,6 +7,7 @@ namespace Crow\Handlers;
 use Crow\Middlewares\ErrorMiddleware;
 use Crow\Middlewares\RoutingMiddleware;
 use Crow\Middlewares\UserMiddlewaresList;
+use Crow\Router\FastRouteDispatcher;
 use Crow\Router\RouterInterface;
 
 class QueueRequestHandlerBuilder
@@ -19,7 +20,13 @@ class QueueRequestHandlerBuilder
         foreach ($middlewaresList->getMiddlewares() as $middleware) {
             $queueRequestHandler->add($middleware);
         }
-        $queueRequestHandler->add(new RoutingMiddleware($router));
+        $queueRequestHandler->add(
+            new RoutingMiddleware(
+                new FastRouteDispatcher(),
+                new RouteDispatchHandler(new QueueRequestHandler()),
+                $router
+            )
+        );
         return $queueRequestHandler;
     }
 }

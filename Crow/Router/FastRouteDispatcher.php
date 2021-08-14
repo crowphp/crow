@@ -14,7 +14,7 @@ class FastRouteDispatcher implements DispatcherFactoryInterface
 
 
     /**
-     * @param array<array> $routeMap
+     * @param Route[] $routeMap
      * @return FastRoute\Dispatcher
      * @throws Exception
      */
@@ -23,9 +23,9 @@ class FastRouteDispatcher implements DispatcherFactoryInterface
         return simpleDispatcher(function (FastRoute\RouteCollector $r) use ($routeMap) {
             foreach ($routeMap as $route) {
                 $r->addRoute(
-                    $route[FastRouter::HTTP_METHOD_LABEL],
-                    $route[FastRouter::ROUTE_LABEL],
-                    $route[FastRouter::HANDLER_LABEL]
+                    $route->getRouteMethod()->getValue(),
+                    $route->getRoutePath()->getFullRoutePath(),
+                    $route->getHandlers()
                 );
             }
         });

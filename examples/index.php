@@ -54,7 +54,7 @@ $router->addGroup('/yousaf', function (RouterInterface $router) {
         $response->getBody()->write(json_encode(["message" => $id]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
     })->middleware(function (RequestInterface $request, RequestHandlerInterface $next) {
-        echo "This is a local middleware 1 for sunny". $request->getUri(). "\n";
+        echo "This is a local middleware 1 for sunny \n";
         return $next->handle($request);
     });
 

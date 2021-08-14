@@ -1,5 +1,6 @@
 parameters:
   level: max
   inferPrivatePropertyTypeFromConstructor: true
+  checkGenericClassInNonGenericObjectType: false
   excludes_analyse:
     - 'Crow/Http/RequestFactory.php'

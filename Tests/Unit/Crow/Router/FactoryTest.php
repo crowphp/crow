@@ -21,7 +21,7 @@ class FactoryTest extends TestCase
         $this->assertEquals(true, method_exists($router, 'delete'));
         $this->assertEquals(true, method_exists($router, 'patch'));
         $this->assertEquals(true, method_exists($router, 'head'));
-        $this->assertEquals(true, method_exists($router, 'dispatch'));
+        $this->assertEquals(true, method_exists($router, 'getRouteMap'));
         $this->assertEquals(true, method_exists($router, 'addRoute'));
         $this->assertEquals(true, method_exists($router, 'addGroup'));
     }

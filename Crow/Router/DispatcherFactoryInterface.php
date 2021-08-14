@@ -10,7 +10,7 @@ interface DispatcherFactoryInterface
 {
 
     /**
-     * @param array[] $routeMap
+     * @param Route[] $routeMap
      * @return FastRoute\Dispatcher
      */
     public function make(array $routeMap): FastRoute\Dispatcher;
