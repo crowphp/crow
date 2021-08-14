@@ -54,7 +54,7 @@ $router->addGroup('/yousaf', function (RouterInterface $router) {
         $response->getBody()->write(json_encode(["message" => $id]));
         return $response->withHeader('Content-Type', 'application/json')->withStatus(403);
     })->middleware(function (RequestInterface $request, RequestHandlerInterface $next) {
-        echo "This is a local middleware 1 for sunny\n";
+        echo "This is a local middleware 1 for sunny \n";
         return $next->handle($request);
     });
 
@@ -79,7 +79,7 @@ $router->addGroup('/yousaf', function (RouterInterface $router) {
 $app->withRouter($router);
 
 $app->withTimeout(5);
-//Uncaught Exceptions
+
 
 $app->use(function (RequestInterface $request, RequestHandlerInterface $next) {
     echo "This is a global middleware 1\n";
@@ -91,6 +91,7 @@ $app->use(function (RequestInterface $request, RequestHandlerInterface $next) {
     return $next->handle($request);
 });
 
+//Uncaught Exceptions
 $app->on('workererror', function ($error) {
     var_dump($error->getMessage());
 });

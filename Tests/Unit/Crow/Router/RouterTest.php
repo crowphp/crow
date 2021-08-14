@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Crow\Router;
 
+
 use Exception;
 use Prophecy\Argument;
 use FastRoute\Dispatcher;
-use Crow\Router\FastRouter;
+use Crow\Router\Router;
 use PHPUnit\Framework\TestCase;
 use Crow\Router\RouterInterface;
 use Prophecy\PhpUnit\ProphecyTrait;
@@ -15,15 +16,33 @@ use Crow\Router\FastRouteDispatcher;
 use Crow\Handlers\QueueRequestHandler;
 use Crow\Handlers\RouteDispatchHandler;
 use Psr\Http\Message\RequestInterface;
+use Crow\Middlewares\RoutingMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Laminas\Diactoros\ServerRequestFactory;
 use Psr\Http\Server\RequestHandlerInterface;
-use Crow\Router\Exceptions\RoutingLogicException;
+use Crow\Router\Types\RouteMiddlewareCollection;
 
-class FastRouterTest extends TestCase
+class RouterTest extends TestCase
 {
     use ProphecyTrait;
+
+    private RequestHandlerInterface $requestHandler;
+
+    public function setup(): void
+    {
+        parent::setup();
+        $this->requestHandler = $this->prophesize(RequestHandlerInterface::class)->reveal();
+    }
+
+    private function makeRoutingMiddleware(Router $router): RoutingMiddleware
+    {
+        return new RoutingMiddleware(
+            new FastRouteDispatcher(),
+            new RouteDispatchHandler(new QueueRequestHandler()),
+            $router
+        );
+    }
 
     private function makeRequest($uri, $method): ServerRequestInterface
     {
@@ -36,132 +55,114 @@ class FastRouterTest extends TestCase
 
     public function testPatch()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
         $router->patch('/patch', function ($request, ResponseInterface $response) {
             return $response->withStatus(303);
         });
-        $this->assertEquals(303, $router->dispatch(
-            $this->makeRequest('/patch', 'PATCH')
+        $handler = $this->makeRoutingMiddleware($router);
+        $this->assertEquals(303, $handler->process(
+            $this->makeRequest('/patch', 'PATCH'),
+            $this->requestHandler
         )->getStatusCode());
     }
 
     public function testHead()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
         $router->head('/head', function ($request, ResponseInterface $response) {
             return $response->withStatus(304);
         });
-        $this->assertEquals(304, $router->dispatch(
-            $this->makeRequest('/head', 'HEAD')
+        $handler = $this->makeRoutingMiddleware($router);
+        $this->assertEquals(304, $handler->process(
+            $this->makeRequest('/head', 'HEAD'),
+            $this->requestHandler
         )->getStatusCode());
     }
 
     public function testDispatchExceptionHandling()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
 
         $router->get('/get', function ($request, ResponseInterface $response) {
             throw new Exception('I am an exception');
         });
+        $handler = $this->makeRoutingMiddleware($router);
         $this->expectException(Exception::class);
-        $router->dispatch(
-            $this->makeRequest('/get', 'GET')
+        $handler->process(
+            $this->makeRequest('/get', 'GET'),
+            $this->requestHandler
         );
     }
 
     public function testDispatchNotFound()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
-        $this->assertEquals(404, $router->dispatch(
-            $this->makeRequest('/head', 'HEAD')
+        $handler = $this->makeRoutingMiddleware($router);
+        $this->assertEquals(404, $handler->process(
+            $this->makeRequest('/head', 'HEAD'),
+            $this->requestHandler
         )->getStatusCode());
     }
 
     public function testDispatchMethodNotAllowed()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
         $router->get('/get', function ($request, ResponseInterface $response) {
             return $response;
         });
-        $this->assertEquals(405, $router->dispatch(
-            $this->makeRequest('/get', 'POST')
+        $handler = $this->makeRoutingMiddleware($router);
+        $this->assertEquals(405, $handler->process(
+            $this->makeRequest('/get', 'POST'),
+            $this->requestHandler
         )->getStatusCode());
     }
 
-    public function testDispatchRoutingLogicException()
-    {
-        $fastRouteDispatcher = $this->prophesize(FastRouteDispatcher::class);
-        $fastRouteDispatcher->make(Argument::any())
-            ->shouldBeCalled()
-            ->willReturn(new class implements Dispatcher {
-
-                public function dispatch($httpMethod, $uri)
-                {
-                    return [100];
-                }
-            });
-        $router = new FastRouter(
-            $fastRouteDispatcher->reveal(),
-            new RouteDispatchHandler(new QueueRequestHandler())
-        );
-        $router->get('/get', function ($request, ResponseInterface $response) {
-            return $response;
-        });
-        $this->expectException(RoutingLogicException::class);
-        $router->dispatch(
-            $this->makeRequest('/get', 'POST')
-        );
-    }
 
     public function testDelete()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
         $router->delete('/delete', function ($request, ResponseInterface $response) {
             return $response->withStatus(305);
         });
-        $this->assertEquals(305, $router->dispatch(
-            $this->makeRequest('/delete', 'DELETE')
+        $handler = $this->makeRoutingMiddleware($router);
+        $this->assertEquals(305, $handler->process(
+            $this->makeRequest('/delete', 'DELETE'),
+            $this->requestHandler
         )->getStatusCode());
     }
 
     public function testPut()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
         $router->put('/put', function ($request, ResponseInterface $response) {
             return $response->withStatus(200);
         });
-        $this->assertEquals(200, $router->dispatch(
-            $this->makeRequest('/put', 'PUT')
+        $handler = $this->makeRoutingMiddleware($router);
+        $this->assertEquals(200, $handler->process(
+            $this->makeRequest('/put', 'PUT'),
+            $this->requestHandler
         )->getStatusCode());
     }
 
 
     public function testAddGroup()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
         $router->addGroup('/group', function (RouterInterface $router) {
             $router->get('/get', function ($request, ResponseInterface $response) {
@@ -173,28 +174,32 @@ class FastRouterTest extends TestCase
         }, function (ServerRequestInterface $request, RequestHandlerInterface $next) {
             return $next->handle($request);
         });
-        $this->assertEquals(205, $router->dispatch(
-            $this->makeRequest('/group/get', 'GET')
+        $handler = $this->makeRoutingMiddleware($router);
+        $this->assertEquals(205, $handler->process(
+            $this->makeRequest('/group/get', 'GET'),
+            $this->requestHandler
         )->getStatusCode());
 
-        $this->assertEquals(206, $router->dispatch(
-            $this->makeRequest('/group/get2', 'GET')
+        $this->assertEquals(206, $handler->process(
+            $this->makeRequest('/group/get2', 'GET'),
+            $this->requestHandler
         )->getStatusCode());
     }
 
     public function testPost()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
         $router->post('/post', function ($request, ResponseInterface $response) {
             $response->getBody()->write('Hello');
 
             return $response->withStatus(306)->withHeader('Test', 'TestVal');
         });
-        $response = $router->dispatch(
-            $this->makeRequest('/post', 'POST')
+        $handler = $this->makeRoutingMiddleware($router);
+        $response = $handler->process(
+            $this->makeRequest('/post', 'POST'),
+            $this->requestHandler
         );
 
         $this->assertEquals(306, $response->getStatusCode());
@@ -204,17 +209,18 @@ class FastRouterTest extends TestCase
 
     public function testAddRoute()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
         $router->addRoute('POST', '/post', function ($request, ResponseInterface $response) {
             $response->getBody()->write('Hello');
 
             return $response->withStatus(306)->withHeader('Test', 'TestVal');
         });
-        $response = $router->dispatch(
-            $this->makeRequest('/post', 'POST')
+        $handler = $this->makeRoutingMiddleware($router);
+        $response = $handler->process(
+            $this->makeRequest('/post', 'POST'),
+            $this->requestHandler
         );
 
         $this->assertEquals(306, $response->getStatusCode());
@@ -224,31 +230,33 @@ class FastRouterTest extends TestCase
 
     public function testGet()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
         $router->get('/get', function ($request, ResponseInterface $response) {
             return $response->withStatus(200);
         });
-        $this->assertEquals(200, $router->dispatch(
-            $this->makeRequest('/get', 'GET')
+        $handler = $this->makeRoutingMiddleware($router);
+        $this->assertEquals(200, $handler->process(
+            $this->makeRequest('/get', 'GET'),
+            $this->requestHandler
         )->getStatusCode());
     }
 
 
     public function testQueryParams()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
         $router->get('/get', function (RequestInterface $request, ResponseInterface $response) {
             $response->getBody()->write($request->getUri()->getQuery());
             return $response->withStatus(200);
         });
-        $response = $router->dispatch(
-            $this->makeRequest('/get?foo=bar', 'GET')
+        $handler = $this->makeRoutingMiddleware($router);
+        $response = $handler->process(
+            $this->makeRequest('/get?foo=bar', 'GET'),
+            $this->requestHandler
         );
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals("foo=bar", $response->getBody()->__toString());
@@ -256,9 +264,8 @@ class FastRouterTest extends TestCase
 
     public function testDynamicUrlParams()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
         $router->get('/get/id/{id}/sunny/{sunny}', function (RequestInterface $request, ResponseInterface $response, $id, $sunny) {
             $response->getBody()->write($id . $sunny);
@@ -269,11 +276,14 @@ class FastRouterTest extends TestCase
             $response->getBody()->write($id);
             return $response->withStatus(200);
         });
-        $response = $router->dispatch(
-            $this->makeRequest('/get/id/1212/sunny/day', 'GET')
+        $handler = $this->makeRoutingMiddleware($router);
+        $response = $handler->process(
+            $this->makeRequest('/get/id/1212/sunny/day', 'GET'),
+            $this->requestHandler
         );
-        $response2 = $router->dispatch(
-            $this->makeRequest('/get/id/1212', 'GET')
+        $response2 = $handler->process(
+            $this->makeRequest('/get/id/1212', 'GET'),
+            $this->requestHandler
         );
 
         $this->assertEquals(200, $response->getStatusCode());
@@ -283,26 +293,29 @@ class FastRouterTest extends TestCase
 
     function testMiddleware()
     {
-        $router = new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        $router = new Router(
+            new RouteMiddlewareCollection()
         );
 
-        $router->middleware(function (ServerRequestInterface $request, RequestHandlerInterface $next) {
-            return $next->handle($request);
-        });
         $router->get(
             '/get/id/{id}/sunny/{sunny}',
             function (RequestInterface $request, ResponseInterface $response, $id, $sunny) {
                 $response->getBody()->write($id . $sunny);
-                return $response->withStatus(200);
+                if($request->hasHeader('test') && $request->getHeaderLine('test') === "value"){
+                    return $response->withStatus(200)
+                        ->withHeader("test", $request->getHeader('test'));
+                }
+                return $response->withStatus(500);
             }
         )->middleware(function (ServerRequestInterface $request, RequestHandlerInterface $next) {
-                return $next->handle($request);
+            return $next->handle($request->withHeader("test","value"));
         });
 
-        $response = $router->dispatch(
-            $this->makeRequest('/get/id/1212/sunny/day', 'GET')
+        $handler = $this->makeRoutingMiddleware($router);
+
+        $response = $handler->process(
+            $this->makeRequest('/get/id/1212/sunny/day', 'GET'),
+            $this->requestHandler
         );
         $this->assertEquals(200, $response->getStatusCode());
     }

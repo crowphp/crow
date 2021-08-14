@@ -33,7 +33,8 @@
     "nyholm/psr7": "^1.3",
     "psr/http-server-handler": "^1.0",
     "psr/http-server-middleware": "^1.0",
-    "dflydev/fig-cookies": "^1.0"
+    "dflydev/fig-cookies": "^1.0",
+    "myclabs/php-enum": "^1.8"
   },
   "autoload": {
     "psr-4": {

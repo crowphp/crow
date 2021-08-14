@@ -14,7 +14,7 @@ interface RouterInterface
 
     public function addRoute(string $httpMethod, string $route, callable $handler): RouterInterface;
 
-    public function addGroup(string $prefix, callable $callback, mixed ...$handlers): void;
+    public function addGroup(string $prefix, callable $callback, MiddlewareInterface|callable ...$handlers): void;
 
     public function get(string $route, callable $handler): RouterInterface;
 
@@ -28,7 +28,10 @@ interface RouterInterface
 
     public function head(string $route, callable $handler): RouterInterface;
 
-    public function dispatch(ServerRequestInterface $request): ResponseInterface;
+    /**
+     * @return Route[]
+     */
+    public function getRouteMap(): array;
 
-    public function middleware(MiddlewareInterface | callable $handler): RouterInterface;
+    public function middleware(MiddlewareInterface|callable $handler): RouterInterface;
 }

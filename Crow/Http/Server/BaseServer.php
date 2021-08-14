@@ -85,9 +85,8 @@ abstract class BaseServer implements ServerInterface
         $this->middlewaresList->add($middleware);
     }
 
-
     /**
-     * @param array[] $configs
+     * @param array<array> $configs
      */
     public function configs(array $configs): void
     {

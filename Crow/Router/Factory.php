@@ -6,6 +6,7 @@ namespace Crow\Router;
 
 use Crow\Handlers\QueueRequestHandler;
 use Crow\Handlers\RouteDispatchHandler;
+use Crow\Router\Types\RouteMiddlewareCollection;
 
 class Factory
 {
@@ -14,9 +15,8 @@ class Factory
      */
     public static function make(): RouterInterface
     {
-        return new FastRouter(
-            new FastRouteDispatcher(),
-            new RouteDispatchHandler(new QueueRequestHandler())
+        return new Router(
+            new RouteMiddlewareCollection()
         );
     }
 }
