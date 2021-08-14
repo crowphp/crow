@@ -36,8 +36,9 @@ class FastRouter implements RouterInterface
 
     public function __construct(
         DispatcherFactoryInterface $dispatcherFactory,
-        RouteDispatchHandler $routeDispatchHandler
-    ) {
+        RouteDispatchHandler       $routeDispatchHandler
+    )
+    {
         $this->dispatcherFactory = $dispatcherFactory;
         $this->routeDispatchHandler = $routeDispatchHandler;
     }
@@ -69,30 +70,15 @@ class FastRouter implements RouterInterface
         return $this;
     }
 
-    public function middleware(MiddlewareInterface | callable $handler): RouterInterface
+    public function middleware(MiddlewareInterface|callable $handler): RouterInterface
     {
-        $currentRouteKey =
-            $this->findRouteByMethodAndPath($this->currentRouteMethod, $this->currentRoutePath);
-        if ($currentRouteKey !== null) {
-            array_push(
-                $this->routeMap[$currentRouteKey][self::HANDLER_LABEL][self::MIDDLEWARES_LABEL],
-                $handler
-            );
-        }
-        return $this;
-    }
 
-    private function findRouteByMethodAndPath(string $routeMethod, string $routePath): ?int
-    {
-        foreach ($this->routeMap as $key => $route) {
-            if (
-                $route[self::ROUTE_LABEL] === $routePath &&
-                $route[self::HTTP_METHOD_LABEL] === $routeMethod
-            ) {
-                return $key;
-            }
-        }
-        return null;
+        array_push(
+            $this->routeMap[array_key_last($this->routeMap)][self::HANDLER_LABEL][self::MIDDLEWARES_LABEL],
+            $handler
+        );
+
+        return $this;
     }
 
     /**
