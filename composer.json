@@ -34,7 +34,8 @@
     "psr/http-server-handler": "^1.0",
     "psr/http-server-middleware": "^1.0",
     "dflydev/fig-cookies": "^1.0",
-    "myclabs/php-enum": "^1.8"
+    "myclabs/php-enum": "^1.8",
+    "laminas/laminas-diactoros": "^2.6"
   },
   "autoload": {
     "psr-4": {
@@ -45,7 +46,6 @@
   "require-dev": {
     "phpunit/phpunit": "^9.5",
     "phpspec/prophecy-phpunit": "^2.0",
-    "laminas/laminas-diactoros": "^2.5",
     "crowphp/badger": "^0.3.0",
     "phpstan/phpstan": "^0.12.72",
     "squizlabs/php_codesniffer": "3.*"

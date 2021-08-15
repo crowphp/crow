@@ -22,7 +22,7 @@ class RouteDispatchHandlerTest extends TestCase
     {
         $request = $this->prophesize(ServerRequestInterface::class);
         $request->hasHeader(Argument::any())->willReturn(true);
-        $request->getHeader(Argument::any())->willReturn("crowphp");
+        $request->getHeaderLine(Argument::any())->willReturn("crowphp");
 
         $routeDispatchHandler = new RouteDispatchHandler(new QueueRequestHandler());
         $middlewares = [

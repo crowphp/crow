@@ -45,17 +45,12 @@ class FinalMiddleware implements MiddlewareInterface
     {
         $response = new Response();
         $defaultHeaders = DefaultHeaders::get();
-        if ($request->hasHeader(self::HOST_HEADER_LABEL)) {
-            $defaultHeaders = array_merge(
-                $defaultHeaders,
-                [
-                    self::HOST_HEADER_LABEL => $request->getHeader(self::HOST_HEADER_LABEL)
-                ]
-            );
+        if ($request->hasHeader(self::HOST_HEADER_LABEL) && $request->getHeaderLine(self::HOST_HEADER_LABEL)) {
+            $defaultHeaders[self::HOST_HEADER_LABEL] = $request->getHeaderLine(self::HOST_HEADER_LABEL);
         }
 
         foreach ($defaultHeaders as $defaultHeader => $defaultHeaderValue) {
-            $response->withHeader(
+            $response = $response->withHeader(
                 $defaultHeader,
                 $defaultHeaderValue
             );
