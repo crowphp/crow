@@ -1,5 +1,8 @@
 #!/usr/bin/env php
 <?php
+// tick use required
+declare(ticks = 1);
+
 require 'vendor/autoload.php';
 
 use Psr\Http\Message\ResponseInterface;
@@ -10,6 +13,13 @@ use Psr\Http\Server\RequestHandlerInterface;
 
 $app = CrowServer::create(CrowServer::SWOOLE_SERVER);
 $router = Crow\Router\Factory::make();
+
+$router2 = Crow\Router\Factory::make();
+
+$router2->get('/router2', function (RequestInterface $request, ResponseInterface $response) {
+    $response->getBody()->write('Hello World from router2');
+    return $response;
+});
 
 $router->get('/', function (RequestInterface $request, ResponseInterface $response) {
     $key = 'crow\php';
@@ -77,6 +87,7 @@ $router->addGroup('/yousaf', function (RouterInterface $router) {
 });
 
 $app->withRouter($router);
+$app->withRouter($router2);
 
 $app->withTimeout(5);
 
@@ -100,10 +111,12 @@ $app->on('start', function ($server) {
     echo "CrowPHP server is listening on port $server->host:$server->port " . PHP_EOL;
 });
 
-$app->configs(['reactor_num' => 2,
-    'worker_num' => 4,
+
+/*$app->configs(['reactor_num' => 2,
+    'worker_num' => 1,
     'backlog' => 128,
     'max_request' => 50,
-    'dispatch_mode' => 1,]);
+    "enable_reuse_port" => true
+    ]);*/
 
 $app->listen(5005, "0.0.0.0");

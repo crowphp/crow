@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Crow\Http\Server;
 
 use Crow\Http\Server\Exceptions\InvalidEventType;
+use Crow\Middlewares\RoutersList;
 use Crow\Middlewares\UserMiddlewaresList;
 use Crow\Router\RouterInterface;
 use Psr\Http\Server\MiddlewareInterface;
@@ -12,8 +13,8 @@ use Psr\Http\Server\MiddlewareInterface;
 abstract class BaseServer implements ServerInterface
 {
 
-    protected RouterInterface $router;
     protected UserMiddlewaresList $middlewaresList;
+    protected RoutersList $routersList;
     /**
      * @var array[]
      */
@@ -29,9 +30,10 @@ abstract class BaseServer implements ServerInterface
     protected array $configs = [];
     protected mixed $server;
 
-    public function __construct(UserMiddlewaresList $middlewaresList)
+    public function __construct(UserMiddlewaresList $middlewaresList, RoutersList $routersList)
     {
         $this->middlewaresList = $middlewaresList;
+        $this->routersList = $routersList;
     }
 
     protected function attachListeners(): void
@@ -50,10 +52,10 @@ abstract class BaseServer implements ServerInterface
         if (in_array($event, $this->invalidEvents)) {
             throw new InvalidEventType("This event type is not permitted");
         }
-        array_push($this->eventListeners, [
+        $this->eventListeners[] = [
             "eventName" => $event,
             "callback" => $callback
-        ]);
+        ];
     }
 
     /**
@@ -63,7 +65,7 @@ abstract class BaseServer implements ServerInterface
      */
     public function withRouter(RouterInterface $router): void
     {
-        $this->router = $router;
+        $this->routersList->add($router);
     }
 
     /**

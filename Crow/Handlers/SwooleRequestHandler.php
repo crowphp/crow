@@ -31,7 +31,7 @@ class SwooleRequestHandler extends CrowRequestHandler
         $this->psrToSwooleResponseBuilder->toSwoole(
             $this->queueRequestHandlerBuilder->build(
                 $this->middlewaresList,
-                $this->router
+                $this->routers
             )->handle(
                 $this->requestFactory->create($request)
             ),

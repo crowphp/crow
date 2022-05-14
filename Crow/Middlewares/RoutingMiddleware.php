@@ -4,39 +4,37 @@ declare(strict_types=1);
 
 namespace Crow\Middlewares;
 
-use FastRoute;
-use Crow\Router\Route;
-use Crow\Http\ResponseBuilder;
-use Crow\Router\RouterInterface;
 use Crow\Handlers\RouteDispatchHandler;
-use Psr\Http\Server\MiddlewareInterface;
+use Crow\Http\ResponseBuilder;
+use Crow\Router\DispatcherFactoryInterface;
+use Crow\Router\Exceptions\RoutingLogicException;
+use Crow\Router\Route;
+use FastRoute;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Crow\Router\DispatcherFactoryInterface;
+use Psr\Http\Server\MiddlewareInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Crow\Router\Exceptions\RoutingLogicException;
 
 class RoutingMiddleware implements MiddlewareInterface
 {
 
-    private RouterInterface $router;
+    private RoutersList $routerList;
     private DispatcherFactoryInterface $dispatcherFactory;
     private RouteDispatchHandler $routeDispatchHandler;
 
     public function __construct(
         DispatcherFactoryInterface $dispatcherFactory,
         RouteDispatchHandler $routeDispatchHandler,
-        RouterInterface $router
+        RoutersList $routersList
     ) {
         $this->dispatcherFactory = $dispatcherFactory;
         $this->routeDispatchHandler = $routeDispatchHandler;
-        $this->router = $router;
+        $this->routerList = $routersList;
     }
 
     public function process(ServerRequestInterface $request, RequestHandlerInterface $handler): ResponseInterface
     {
-        $dispatcher = $this->dispatcherFactory->make($this->router->getRouteMap());
-        $routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getUri()->getPath());
+        $routeInfo = $this->findRouteInfo($request);
 
         switch ($routeInfo[0]) {
             case FastRoute\Dispatcher::NOT_FOUND:
@@ -62,5 +60,21 @@ class RoutingMiddleware implements MiddlewareInterface
         }
 
         throw new RoutingLogicException('Something went wrong in routing.');
+    }
+
+    private function findRouteInfo(ServerRequestInterface $request): ?array
+    {
+        $routeInfo = null;
+        foreach ($this->routerList->getRouters() as $router) {
+            $routeInfo = $this->dispatcherFactory->make($router->getRouteMap())->dispatch(
+                $request->getMethod(),
+                $request->getUri()->getPath()
+            );
+
+            if ($routeInfo[0] === FastRoute\Dispatcher::FOUND) {
+                return $routeInfo;
+            }
+        }
+        return $routeInfo;
     }
 }

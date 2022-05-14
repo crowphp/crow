@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Crow\Http\Server;
 
-use Crow\Http\RequestFactory;
-use Crow\Handlers\ReactRequestHandler;
+use Crow\Handlers\QueueRequestHandlerBuilder;
 use Crow\Handlers\SwooleRequestHandler;
 use Crow\Http\PsrToSwooleResponseBuilder;
-use Crow\Middlewares\UserMiddlewaresList;
-use Crow\Handlers\QueueRequestHandlerBuilder;
+use Crow\Http\RequestFactory;
 use Crow\Http\Server\Exceptions\InvalidServerType;
+use Crow\Middlewares\RoutersList;
+use Crow\Middlewares\UserMiddlewaresList;
 
 class Factory
 {
@@ -28,7 +28,8 @@ class Factory
                         new PsrToSwooleResponseBuilder(),
                         new RequestFactory()
                     ),
-                    new UserMiddlewaresList()
+                    new UserMiddlewaresList(),
+                    new RoutersList()
                 );
         }
         throw new InvalidServerType("Invalid server type provided");

@@ -35,7 +35,8 @@
     "psr/http-server-middleware": "^1.0",
     "dflydev/fig-cookies": "^1.0",
     "myclabs/php-enum": "^1.8",
-    "laminas/laminas-diactoros": "^2.6"
+    "laminas/laminas-diactoros": "^2.6",
+    "ext-pcntl": "*"
   },
   "autoload": {
     "psr-4": {
